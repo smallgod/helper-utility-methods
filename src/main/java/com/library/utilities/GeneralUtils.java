@@ -29,14 +29,18 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
@@ -266,7 +270,6 @@ public class GeneralUtils {
         Gson gson = new Gson();
         return gson.fromJson(stringToConvert.trim(), objectType);
     }
-    
 
     /**
      * Generate short UUID (13 characters)
@@ -346,120 +349,6 @@ public class GeneralUtils {
     }
 
     /**
-     * Send Json string with a JSONObject parameter
-     *
-     * @param url
-     * @param obj
-     * @return
-     */
-    public static Object sendJsonRequest(final String url, final JSONObject obj) {
-
-        //String myString = new JSONStringer().object().key("JSON").value("Hello, World!").endObject().toString();
-        //produces {"JSON":"Hello, World!"}
-        //about to convert the  BEEP API request (in whatever form it is now) -> to a JSON string
-        try {
-            HttpPost request = new HttpPost(url);
-            JSONStringer json = new JSONStringer();
-            StringBuilder sb = new StringBuilder();
-
-            if (obj != null) {
-                Iterator<String> itKeys = obj.keys();
-                if (itKeys.hasNext()) {
-                    json.object();
-                }
-                while (itKeys.hasNext()) {
-                    String k = itKeys.next();
-                    json.key(k).value(obj.get(k));
-                }
-            }
-            json.endObject();
-
-            StringEntity entity = new StringEntity(json.toString());
-            entity.setContentType("application/json;charset=UTF-8");
-            entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json;charset=UTF-8"));
-            request.setHeader("Accept", "application/json");
-            request.setEntity(entity);
-
-            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-            HttpResponse response = httpClient.execute(request);
-
-            InputStream in = response.getEntity().getContent();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-            return sb.toString();
-
-        } catch (IOException ex) {
-            logger.error("IOException: " + ex.getMessage());
-            return null;
-        } catch (IllegalStateException ex) {
-            logger.error("IllegalStateException: " + ex.getMessage());
-            return null;
-        } catch (JSONException ex) {
-            logger.error("JSONException: " + ex.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Send Json string with a String parameter
-     *
-     * @param url
-     * @param jsonString
-     * @return
-     */
-    public static Object sendJsonRequest(final String url, final String jsonString) {
-
-        //String myString = new JSONStringer().object().key("JSON").value("Hello, World!").endObject().toString();
-        //produces {"JSON":"Hello, World!"}
-        //about to convert the  BEEP API request (in whatever form it is now) -> to a JSON string
-        try {
-            HttpPost request = new HttpPost(url);
-            JSONStringer json = new JSONStringer();
-            StringBuilder sb = new StringBuilder();
-
-            StringEntity entity = new StringEntity(jsonString);
-            entity.setContentType("application/json;charset=UTF-8");
-            entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json;charset=UTF-8"));
-            request.setHeader("Accept", "application/json");
-            request.setEntity(entity);
-
-            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-            HttpResponse response = httpClient.execute(request);
-
-            InputStream in = response.getEntity().getContent();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-            return sb.toString();
-
-        } catch (IOException ex) {
-            logger.error("IOException: " + ex.getMessage());
-            return null;
-        } catch (IllegalStateException ex) {
-            logger.error("IllegalStateException: " + ex.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Generate random 5 digit number
-     *
-     * @return
-     */
-    public static int generate5Digits() {
-
-        Random r = new Random(System.currentTimeMillis());
-        return 10000 + r.nextInt(20000);
-    }
-
-    /**
      * The following methods will remove all invalid XML characters from a given
      * string (the special handling of a CDATA section is not supported).
      *
@@ -489,5 +378,16 @@ public class GeneralUtils {
         //return user;
         return detailsSet;
     }
-    
+
+    /**
+     * Generate random 5 digit number
+     *
+     * @return
+     */
+    public static int generate5Digits() {
+
+        Random r = new Random(System.currentTimeMillis());
+        return 10000 + r.nextInt(20000);
+    }
+
 }
