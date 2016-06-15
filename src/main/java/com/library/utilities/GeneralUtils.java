@@ -13,41 +13,28 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.library.datamodel.Constants.APIMethodName;
+import com.library.datamodel.Constants.APIContentType;
 import com.library.datamodel.Constants.NamedConstants;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONStringer;
 
 /**
  *
@@ -130,19 +117,51 @@ public class GeneralUtils {
     }
 
     /**
-     * Get the node value with key "method" from the calling JSON string
+     * Get the method name value with key "method" if Json request or enclosing
+     * method root name if xml request
      *
      * @param jsonRequest
+     * @param apiType
      * @return
      * @throws IOException
      */
-    public static String getMethodNode(String jsonRequest) throws IOException {
+    public static String getMethodName(String jsonRequest, APIContentType apiType) throws IOException {
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(jsonRequest);
-        String methodName = rootNode.path(NamedConstants.JSON_METHOD_NODENAME).asText();
+        String methodName = "";
 
+        switch (apiType) {
+
+            case JSON:
+
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode rootNode = mapper.readTree(jsonRequest);
+                methodName = rootNode.path(NamedConstants.JSON_METHOD_NODENAME).asText();
+
+                break;
+
+            case XML:
+                break;
+
+        }
+
+        //APIMethodName methodNameEnum = APIMethodName.convertToEnum(methodName);
         return methodName;
+    }
+
+    public static List<NameValuePair> convertToNameValuePair(Map<String, String> pairs) {
+
+        if (pairs == null) {
+            return null;
+        }
+        
+        List<NameValuePair> nvpList = new ArrayList<>(pairs.size());
+
+        for (Map.Entry<String, String> entry : pairs.entrySet()) {
+            nvpList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+        }
+
+        return nvpList;
+
     }
 
     /**
