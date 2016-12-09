@@ -5,6 +5,7 @@
  */
 package com.library.utilities;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -123,9 +124,10 @@ public class GeneralUtils {
      * @param jsonRequest
      * @param apiType
      * @return
+     * @throws com.fasterxml.jackson.core.JsonProcessingException
      * @throws IOException
      */
-    public static String getMethodName(String jsonRequest, APIContentType apiType) throws IOException {
+    public static String getMethodName(String jsonRequest, APIContentType apiType) throws JsonProcessingException, IOException {
 
         String methodName = "";
 

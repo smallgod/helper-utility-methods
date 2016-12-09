@@ -11,4 +11,19 @@ package com.library.utilities;
  */
 public class StringUtils {
     
+    
+        /**
+     * Replace one or more spaces in a string with given string/xter
+     *
+     * @param stringToFormat
+     * @param replaceWith
+     * @return
+     */
+    public static String replaceSpaces(String stringToFormat, String replaceWith) {
+
+        String formattedString = stringToFormat.replaceAll("\\s+", replaceWith);
+        return formattedString;
+    }
+
+    
 }
