@@ -14,7 +14,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import com.library.datamodel.Constants.APIMethodName;
 import com.library.datamodel.Constants.APIContentType;
 import com.library.datamodel.Constants.NamedConstants;
 import java.io.BufferedReader;
@@ -24,6 +23,8 @@ import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -34,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.openide.util.MapFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -409,6 +411,34 @@ public class GeneralUtils {
 
         Random r = new Random(System.currentTimeMillis());
         return 10000 + r.nextInt(20000);
+    }
+
+     /**
+     * Convert Set to List
+     *
+     * @param <T>
+     * @param set
+     * @return
+     */
+    public static <T> List<T> convertSetToList(Set<T> set) {
+
+        List<T> newList = new ArrayList<>(set);
+        return newList;
+    }
+
+    /**
+     * Convert List to Set
+     *
+     * @param <T>
+     * @param list
+     * @return
+     */
+    public static <T> Set<T> convertListToSet(List<T> list) {
+
+        System.out.println("1st : " + MapFormat.format("", new HashMap<>()));
+
+        Set<T> set = new HashSet<>(list);
+        return set;
     }
 
 }
