@@ -60,9 +60,36 @@ public class HibernateUtils {
      * @param customHibernate
      * @return
      */
-    public static synchronized long generateLongID(CustomHibernate customHibernate) {
+    public static synchronized long generateLongIDOLD2(CustomHibernate customHibernate) {
 
         List<Long> fileIdList = customHibernate.fetchOnlyColumn(TbFile.class, "id.fileId");
+
+        LOG.debug("Records fetched size [TbFile.class]: " + fileIdList.size());
+
+        Set<Long> fileIds = GeneralUtils.convertListToSet(fileIdList);
+
+        long fileID;
+
+        do {
+            fileID = IDCreator.GenerateLong();
+        } while (fileIds.contains(fileID));
+
+        return fileID;
+    }
+
+    /**
+     * Generate the FileID To-Do -> Method fetches entire file list for each
+     * call, we need to come up with a better way of doing this.
+     *
+     * @param customHibernate
+     * @param classType
+     * @param idColumnName
+     * @return
+     */
+    public static synchronized long generateLongID(CustomHibernate customHibernate, Class classType, String idColumnName) {
+
+        List<Long> fileIdList = customHibernate.fetchOnlyColumn(classType, idColumnName);
+        //List<Long> fileIdList = customHibernate.fetchOnlyColumn(TbFile.class, "id.fileId");
 
         LOG.debug("Records fetched size [TbFile.class]: " + fileIdList.size());
 
@@ -83,9 +110,10 @@ public class HibernateUtils {
      * @param customHibernate
      * @return
      */
-    public static synchronized int generateIntegerID(CustomHibernate customHibernate) {
+    public static synchronized int generateIntegerIDOLD2(CustomHibernate customHibernate) {
 
-        List<Integer> fileIdList = customHibernate.fetchOnlyColumn(TbCustomer.class, "CSTM_ID");
+        //List<Integer> idList = customHibernate.fetchOnlyColumn(TbCustomer.class, "CSTM_ID");
+        List<Integer> fileIdList = customHibernate.fetchOnlyColumn(TbCustomer.class, "cstmId");
 
         Set<Integer> set = convertListToSet(fileIdList);
 
@@ -96,6 +124,29 @@ public class HibernateUtils {
         } while (set.contains(customerID));
 
         return customerID;
+    }
+
+    /**
+     * Generate a customer ID
+     *
+     * @param customHibernate
+     * @param classType
+     * @param idColumnName
+     * @return
+     */
+    public static synchronized int generateIntegerID(CustomHibernate customHibernate, Class classType, String idColumnName) {
+
+        List<Integer> idList = customHibernate.fetchOnlyColumn(classType, idColumnName);
+
+        Set<Integer> set = convertListToSet(idList);
+
+        int generatedId;
+
+        do {
+            generatedId = IDCreator.GenerateInt();
+        } while (set.contains(generatedId));
+
+        return generatedId;
     }
 
 }

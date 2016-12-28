@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationException;
@@ -36,7 +37,7 @@ public class BindXmlAndPojo {
      * @param classToBind
      * @return
      */
-    public static String objectToXML(Object xmlObject, Class... classToBind) throws MyCustomException {
+    public static String objectToXMLOLD(Object xmlObject, Class... classToBind) throws MyCustomException {
 
         String xmlOutput = null;
         StringWriter sw = new StringWriter();
@@ -51,10 +52,30 @@ public class BindXmlAndPojo {
             //m.marshal( xmlObject, System.out );
             marshaller.marshal(xmlObject, sw);
         } catch (JAXBException e) {
-             throw new MyCustomException("Error marshalling", ErrorCode.INTERNAL_ERR, "Error creating response: " + e.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+            throw new MyCustomException("Error marshalling", ErrorCode.INTERNAL_ERR, "Error creating response: " + e.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
         }
 
         xmlOutput = sw.toString();
+
+        return xmlOutput;
+    }
+
+    public static String objectToXML(Object xmlObject, Class... classToBind) throws JAXBException {
+
+        String xmlOutput = null;
+        StringWriter sw = new StringWriter();
+
+        JAXBContext jc = JAXBContext.newInstance(classToBind);
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8"); //NOI18N
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        //m.marshal( xmlObject, System.out );
+        marshaller.marshal(xmlObject, sw);
+
+        xmlOutput = sw.toString();
+             
+        //JAXBContext jaxb = JAXBContext.newInstance("com.ats.vis.services.concentrator", com.ats.vis.services.concentrator.LoadDataRequest.class.getClassLoader());
+        //Marshaller marshaller = jaxb.createMarshaller();
 
         return xmlOutput;
     }
@@ -90,7 +111,6 @@ public class BindXmlAndPojo {
 //
 //        return xmlObject;
 //    }
-
     /**
      * *
      *
@@ -113,7 +133,6 @@ public class BindXmlAndPojo {
 //
 //        return xsdFilePath;
 //    }
-
     /**
      *
      * @param xmlFilePath
@@ -170,20 +189,20 @@ public class BindXmlAndPojo {
 //
 //        return xmlObject;
 //    }
-    
     /**
-     * 
+     *
      * @param <T>
      * @param xmlFilePath - the xml file to unmarshal (convert to Java Object)
-     * @param xsdFilePath - file from with the xml file is generated
-     * @param classToBind - corresponding java classs (JAXB) used for marshalling/unmarshalling
+     * @param xsdFilePath - file from which the xml file is generated
+     * @param classToBind - corresponding java classs (JAXB) used for
+     * marshalling/unmarshalling
      * @return
      * @throws FileNotFoundException
      * @throws UnsupportedEncodingException
      * @throws SAXException
      * @throws ValidationException
      * @throws JAXBException
-     * @throws NullPointerException 
+     * @throws NullPointerException
      */
     public static <T> Object xmlFileToObject(String xmlFilePath, String xsdFilePath, Class<T> classToBind) throws FileNotFoundException, UnsupportedEncodingException, SAXException, ValidationException, JAXBException, NullPointerException {
 
@@ -199,25 +218,25 @@ public class BindXmlAndPojo {
         InputSource is = new InputSource(reader);
         is.setEncoding("UTF-8");
 
-
         System.out.println("type of class to unmarshal to is: " + classToBind.getTypeName());
-        
+
         //validate the XML
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = sf.newSchema(new File(xsdFilePath));
-        
+
         JAXBContext jc = JAXBContext.newInstance(classToBind);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        
+
         unmarshaller.setSchema(schema);
 
         unmarshaller.setEventHandler(new XMLValidationEventHandler());
         //XMLObject xmlObject = (DBMSXMLObject) unmarshaller.unmarshal(new File(xmlFilePath)); 
 
         Object xmlObject = null;
-        try{
-            xmlObject = unmarshaller.unmarshal(is);
-        }catch(JAXBException e){
+        try {
+            //xmlObject = unmarshaller.unmarshal(is);
+            xmlObject = JAXBIntrospector.getValue(unmarshaller.unmarshal(is));
+        } catch (JAXBException e) {
             e.printStackTrace();
             System.err.println("ERROR: " + e.getMessage());
         }

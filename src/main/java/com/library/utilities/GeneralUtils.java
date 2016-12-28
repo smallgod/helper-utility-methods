@@ -440,5 +440,22 @@ public class GeneralUtils {
         Set<T> set = new HashSet<>(list);
         return set;
     }
+    
+    /**
+     * Convert a JSON string to pretty print version
+     *
+     * @param jsonString
+     * @return a well formatted JSON string
+     */
+    public static String toPrettyJsonFormat(String jsonString) {
+        JsonParser parser = new JsonParser();
+
+        JsonObject json = parser.parse(jsonString).getAsJsonObject();
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String prettyJson = gson.toJson(json);
+
+        return prettyJson;
+    }
 
 }
