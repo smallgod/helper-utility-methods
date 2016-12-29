@@ -79,6 +79,26 @@ public class BindXmlAndPojo {
 
         return xmlOutput;
     }
+    
+    //    public static <T> String marshalFile(JAXBElement<T> config, Class classToBind) throws JAXBException {
+//
+//        StringWriter sw = new StringWriter();
+//
+//        JAXBContext jc = JAXBContext.newInstance(classToBind);
+//        Marshaller marshaller = jc.createMarshaller();
+//        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8"); //NOI18N
+//        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+//        //m.marshal( xmlObject, System.out );
+//
+//        //jaxb.com.library.datamodel.dsm_bridge.xmlpojos.file.ObjectFactory objectFactory = new jaxb.com.library.datamodel.dsm_bridge.xmlpojos.file.ObjectFactory();
+//        //JAXBElement<ConfigType> configType = objectFactory.createConfig(config);
+//        marshaller.marshal(config, sw);
+//
+//        //JAXBContext jaxb = JAXBContext.newInstance("com.ats.vis.services.concentrator", com.ats.vis.services.concentrator.LoadDataRequest.class.getClassLoader());
+//        //Marshaller marshaller = jaxb.createMarshaller();
+//        return sw.toString();
+//    }
+    
 
     /**
      * Unmarshall information into a java object

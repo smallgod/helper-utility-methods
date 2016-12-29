@@ -22,12 +22,15 @@ public final class UploadUtils {
     public static int getFileType(String fileName) {
         try {
             String extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
-            if (VIDEO_FILE_EXT_NAMES.contains(extension)) {
-                return 1;
-            }
+            
             if (IMAGE_FILE_EXT_NAMES.contains(extension)) {
                 return 0;
             }
+            
+            if (VIDEO_FILE_EXT_NAMES.contains(extension)) {
+                return 1;
+            }
+            
             if (AUDIO_FILE_EXT_NAMES.contains(extension)) {
                 return 2;
             }
