@@ -12,6 +12,9 @@ public final class VersionUtils {
     public static final int FIELD_STRATEGY = 3;
     private static final SimpleDateFormat versionDateFormat = new SimpleDateFormat("yyyyMMdd HHmmss");
 
+    
+  
+    
     public static Date defaultVersion() {
         return date1970;
     }
@@ -27,7 +30,7 @@ public final class VersionUtils {
 
     public static final Date date1970 = parseDate("19700101 000000");
 
-    private static Date parseDate(String dateString) {
+    public static Date parseDate(String dateString) {
         try {
             return versionDateFormat.parse(dateString);
         } catch (ParseException e) {
