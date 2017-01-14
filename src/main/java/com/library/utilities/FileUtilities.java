@@ -5,38 +5,20 @@
  */
 package com.library.utilities;
 
-import com.google.gson.reflect.TypeToken;
-import com.opencsv.CSVReader;
+import com.library.customexception.MyCustomException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.lang.reflect.Type;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Row;
+import java.util.zip.CRC32;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -44,26 +26,9 @@ import org.slf4j.LoggerFactory;
  */
 public class FileUtilities {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileUtilities.class);
+    private static final LoggerUtil logger = new LoggerUtil(FileUtilities.class);
 
     private static final int BUFFER_SIZE = 8 * 1024;
-
-    private FileUtilities() {
-        //called only once
-    }
-
-    private static class FileUtilitiesSingletonHolder {
-
-        private static final FileUtilities INSTANCE = new FileUtilities();
-    }
-
-    public static FileUtilities getInstance() {
-        return FileUtilitiesSingletonHolder.INSTANCE;
-    }
-
-    protected Object readResolve() {
-        return getInstance();
-    }
 
     /**
      *
@@ -118,44 +83,6 @@ public class FileUtilities {
         }
     }
 
-//    public static boolean convertFileToCSV1(String inputFile, String outputFile) {
-//
-//        try {
-//            // build the system command we want to run
-//            List<String> commands = new ArrayList<>();
-//
-//            String createFile = "touch %s";
-//            String formattedCmd1 = String.format(createFile, outputFile);
-//            String conversionCmd = "ssconvert --export-type=Gnumeric_stf:stf_csv %s %s";
-//            String formattedCmd2 = String.format(conversionCmd, inputFile, outputFile);
-//
-//            //commands.add("/bin/sh");
-//            commands.add(formattedCmd1);
-//            commands.add(formattedCmd2);
-//
-//            // execute the command
-//            SystemCommandExecutor commandExecutor = new SystemCommandExecutor(commands);
-//            int result = commandExecutor.executeCommand();
-//
-//            // get the stdout and stderr from the command that was run
-//            StringBuilder stdout = commandExecutor.getStandardOutputFromCommand();
-//            StringBuilder stderr = commandExecutor.getStandardErrorFromCommand();
-//
-//            // print the stdout and stderr
-//            System.out.println("The numeric result of the command was: " + result);
-//            System.out.println("STDOUT:");
-//            System.out.println(stdout);
-//            System.out.println("STDERR:");
-//            System.out.println(stderr);
-//        } catch (IOException ex) {
-//            java.util.logging.Logger.getLogger(FileUtilities.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (InterruptedException ex) {
-//            java.util.logging.Logger.getLogger(FileUtilities.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//
-//        return Boolean.TRUE;
-//    }
-
     /**
      * *
      * Get file extension e.g. txt, xls, ods, odt, csv, xlsl
@@ -196,7 +123,7 @@ public class FileUtilities {
      * @return filename with new extension
      * @throws com.namaraka.recon.exceptiontype.MyCustomException
      */
-    public static String changeFileTypeToCSV(String oldFileName, String newFileExtension)  {
+    public static String changeFileTypeToCSV(String oldFileName, String newFileExtension) {
 
         String newFileName = null;
 
@@ -234,8 +161,67 @@ public class FileUtilities {
      * @throws IOException
      */
     public static void copyFile(File source, File dest) throws IOException {
-        
+
         Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public static void copyFile(String source, String dest) {
+
+        FileChannel sourceChannel = null;
+        FileChannel destChannel = null;
+
+        try {
+
+            sourceChannel = new FileInputStream(source).getChannel();
+            destChannel = new FileOutputStream(dest).getChannel();
+            long bitesTransfered = destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+
+        } catch (FileNotFoundException ex) {
+            logger.error("FileNotFoundException occurred while copying file: " + ex.getMessage());
+        } catch (IOException ex) {
+            logger.error("IOException occurred while copying file: " + ex.getMessage());
+        } finally {
+
+            try {
+                if (sourceChannel != null) {
+                    sourceChannel.close();
+                }
+                if (destChannel != null) {
+                    destChannel.close();
+                }
+            } catch (IOException ex) {
+                logger.error("IOException occurred while closing openned File Streams: " + ex.getMessage());
+            }
+        }
+
+    }
+
+    public static void copyFileUsingChannel(File source, File dest) {
+
+        FileChannel sourceChannel = null;
+        FileChannel destChannel = null;
+
+        try {
+            sourceChannel = new FileInputStream(source).getChannel();
+            destChannel = new FileOutputStream(dest).getChannel();
+            long bitesTransfered = destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+
+        } catch (FileNotFoundException ex) {
+            logger.error("FileNotFoundException occurred while copying file: " + ex.getMessage());
+        } catch (IOException ex) {
+            logger.error("IOException occurred while copying file: " + ex.getMessage());
+        } finally {
+            try {
+                if (sourceChannel != null) {
+                    sourceChannel.close();
+                }
+                if (destChannel != null) {
+                    destChannel.close();
+                }
+            } catch (IOException ex) {
+                logger.error("IOException occurred while closing openned File Streams: " + ex.getMessage());
+            }
+        }
     }
 
     /**
@@ -271,111 +257,133 @@ public class FileUtilities {
         return isCreated;
     }
 
-    /**
-     * *
-     * create an excel work book instance
-     *
-     * @param fileExtConstant
-     * @param fileInputStream
-     * @return
-     * @throws IOException
-     */
-//    public static Workbook getWorkBookInstanceHelper(FileExtension fileExtConstant, FileInputStream fileInputStream) throws IOException {
-//
-//        Workbook workBook = null;
-//
-//        switch (fileExtConstant) {
-//
-//            case CSV:
-//                break;
-//
-//            case XLS:
-//
-//                workBook = new HSSFWorkbook(fileInputStream);
-//                break;
-//
-//            case XLSX:
-//
-//                workBook = new XSSFWorkbook(fileInputStream);
-//                break;
-//
-//            default:
-//                logger.error("File extension: " + FileExtension.XLS.toString() + " -> not found: ");
-//                throw new NullPointerException("File extension: " + FileExtension.XLS.toString() + " -> not found: ");
-//        }
-//
-//        return workBook;
-//    }
+    public static boolean createDirectory(String dir_path) {
+        logger.debug("CREATING new DIR: " + dir_path);
+        return (new File(dir_path).mkdirs());
+    }
 
-    /**
-     * *
-     * create an excel work book instance
-     *
-     * @param fileExtConstant
-     * @return
-     * @throws IOException
-     */
-//    public static Workbook getWorkBookInstanceHelper(FileExtension fileExtConstant) throws IOException {
-//
-//        Workbook workBook = null;
-//
-//        switch (fileExtConstant) {
-//
-//            case CSV:
-//                break;
-//
-//            case XLS:
-//
-//                workBook = new HSSFWorkbook();
-//                break;
-//
-//            case XLSX:
-//                workBook = new XSSFWorkbook();
-//                break;
-//
-//            default:
-//                logger.error("File extension: " + FileExtension.XLS.toString() + " -> not found: ");
-//                throw new NullPointerException("File extension: " + FileExtension.XLS.toString() + " -> not found: ");
-//        }
-//
-//        return workBook;
-//    }
+    public static void createFileDirectory(String file_path) {
+        new File(file_path).getParentFile().mkdirs();
+    }
 
-//    public static Workbook createWorkBook(String fileToBeReadPath) throws MyCustomException {
-//
-//        //fileRemoteUrl = new URL(fileToBeReadPath);
-//        //InputStream in = fileRemoteUrl.openStream(); 
-//        String fileExtension = FileUtilities.getFileExtension(fileToBeReadPath);
-//        //fileExtConstant = FileExtension.valueOf(newFileName.toUpperCase(Locale.ENGLISH));
-//        FileExtension fileExtConstant = FileExtension.convertToEnum(fileExtension);
-//
-//        Workbook workBook;
-//
-//        try {
-//            // Use a file
-//            workBook = WorkbookFactory.create(new File(fileToBeReadPath));
-//
-//            // Use an InputStream, needs more memory
-//            //workBook = WorkbookFactory.create(new FileInputStream("MyExcel.xlsx"));
-//        } catch (InvalidFormatException ife) {
-//            logger.error("InvalidFormatException creating workbook object" + ife.getMessage());
-//            throw new MyCustomException("InvalidFormatException creating workbook object", ErrorCode.PROCESSING_ERR, "Failed to create a workBook object: " + ife.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
-//
-//        } catch (FileNotFoundException ife) {
-//            logger.error("FileNotFoundException creating workbook object" + ife.getMessage());
-//            throw new MyCustomException("FileNotFoundException creating workbook object", ErrorCode.PROCESSING_ERR, "Failed to create a workBook object: " + ife.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
-//
-//        } catch (IOException ife) {
-//            logger.error("IOException creating workbook object" + ife.getMessage());
-//            throw new MyCustomException("IOException creating workbook object", ErrorCode.PROCESSING_ERR, "Failed to create a workBook object: " + ife.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
-//
-//        }
-//
-//        /*try (FileInputStream fileInputStream = new FileInputStream(new File(fileToBeReadPath))) {
-//         workBook = FileUtilities.getWorkBookInstanceHelper(fileExtConstant, fileInputStream);
-//         }*/
-//        return workBook;
-//    }
+    public static void deleteDirectory(String dir) {
+        File dirFile = new File(dir);
+        if (dirFile.exists()) {
+            File[] children = dirFile.listFiles();
+            if ((children != null) && (children.length > 0)) {
+                for (int i = 0; i < children.length; i++) {
+                    if (children[i].isDirectory()) {
+                        deleteDirectory(children[i].getAbsolutePath());
+                    } else if (children[i].isFile()) {
+                        children[i].delete();
+                    }
+                }
+            }
+            dirFile.delete();
+        }
+    }
+
+    public static long getFileSize(String file_path) {
+        File file = new File(file_path);
+        if ((!file.exists()) || (!file.isFile())) {
+            throw new IllegalArgumentException("cannot find file: " + file_path);
+        }
+        return file.length();
+    }
+
+    protected static long getFileCRC(String file_path) {
+        File file = new File(file_path);
+        if ((!file.exists()) || (!file.isFile())) {
+            throw new IllegalArgumentException("cannot find file: " + file_path);
+        }
+        int BUF_SIZE = 65536;
+
+        long fileSize = file.length();
+
+        FileInputStream fs = null;
+        byte[] buf = null;
+        try {
+            fs = new FileInputStream(file);
+
+            buf = new byte[65536];
+
+            long oneceSize = 0L;
+            long calculated = 0L;
+            CRC32 crc32 = new CRC32();
+            while (calculated < fileSize) {
+                oneceSize = fileSize - calculated;
+                if (oneceSize > 65536L) {
+                    oneceSize = 65536L;
+                }
+                int read = 0;
+                while (read < oneceSize) {
+                    int rlen = fs.read(buf, read, (int) oneceSize - read);
+                    if (rlen <= 0) {
+                        throw new RuntimeException("Read tar file error: " + file_path);
+                    }
+                    read += rlen;
+                }
+
+                crc32.update(buf, 0, read);
+                calculated += oneceSize;
+            }
+
+            return crc32.getValue();
+        } catch (IOException ioex) {
+            throw new RuntimeException(ioex);
+        } finally {
+            buf = null;
+            try {
+                if (fs != null) {
+                    fs.close();
+                }
+            } catch (IOException localIOException2) {
+            }
+        }
+    }
+
+    public static boolean existFile(String path) {
+        File file = new File(path);
+        return file.exists();
+    }
+
+    public static boolean moveFile(String src, String dest) {
+
+        File file_src = new File(src);
+        File file_dest = new File(dest);
+
+        if (!file_src.exists()) {
+            throw new IllegalArgumentException("cannot find source file: " + src);
+        }
+        if (file_dest.exists()) {
+            throw new IllegalStateException("exited destination file: " + dest);
+        }
+        file_dest.getParentFile().mkdirs();
+        return file_src.renameTo(file_dest);
+    }
+
+    public static boolean deleteFile(String path) {
+        File file = new File(path);
+        return file.exists() ? file.delete() : true;
+    }
+
+    public static boolean isNewFileCreated(String filePath) throws IOException {
+
+        File file = new File(filePath);
+        if (!file.exists()) {
+            //check if parent dir exists
+            if (!(file.getParentFile().exists())) {
+                logger.debug("Creating DIRs: " + file);
+                file.getParentFile().mkdirs();
+            }
+            file.createNewFile();  //Dont create the file yet
+
+            return Boolean.TRUE;
+        } else {
+
+            return Boolean.FALSE;
+        }
+    }
 
     /**
      *
@@ -409,7 +417,6 @@ public class FileUtilities {
 //
 //        return noOfPhysicalRows;
 //    }
-
     /**
      * *
      * @param sheet
@@ -422,7 +429,6 @@ public class FileUtilities {
 //
 //        return rowIterator;
 //    }
-
     /**
      * Count the number of lines in a file
      *
@@ -462,7 +468,6 @@ public class FileUtilities {
 //        return lineCount;
 //
 //    }
-
     /**
      * Counts number of lines in file (**NOT cross-platform)
      *
@@ -494,7 +499,6 @@ public class FileUtilities {
 //        }
 //        return lineCount;
 //    }
-
     /**
      * Count the number of lines (3* faster)
      *
