@@ -16,16 +16,20 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.library.datamodel.Constants.APIContentType;
 import com.library.datamodel.Constants.NamedConstants;
+import com.library.datamodel.jaxb.config.v1_0.LayoutContentType;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -157,7 +161,7 @@ public class GeneralUtils {
         if (pairs == null) {
             return null;
         }
-        
+
         List<NameValuePair> nvpList = new ArrayList<>(pairs.size());
 
         for (Map.Entry<String, String> entry : pairs.entrySet()) {
@@ -413,7 +417,7 @@ public class GeneralUtils {
         return 10000 + r.nextInt(20000);
     }
 
-     /**
+    /**
      * Convert Set to List
      *
      * @param <T>
@@ -440,7 +444,7 @@ public class GeneralUtils {
         Set<T> set = new HashSet<>(list);
         return set;
     }
-    
+
     /**
      * Convert a JSON string to pretty print version
      *
@@ -456,6 +460,85 @@ public class GeneralUtils {
         String prettyJson = gson.toJson(json);
 
         return prettyJson;
+    }
+
+    /**
+     * Round up to next 100th integer
+     *
+     * @param value
+     * @return
+     */
+    public static int roundUpToNext100(double value) {
+
+        return (int) (Math.ceil(value / 100.0) * 100);
+    }
+
+    /**
+     * Round up to next integer
+     *
+     * @param value
+     * @return
+     */
+    public static int roundUpToNextInt(double value) {
+        return (int) Math.ceil(value);
+    }
+
+    /**
+     * Add commas to a number
+     *
+     * @param numberToFormat
+     * @return
+     */
+    public static String addCommas1(int numberToFormat) {
+
+        return (NumberFormat.getNumberInstance(Locale.US).format(numberToFormat));
+    }
+
+    /**
+     *
+     * @param numberToAddCommas
+     * @return
+     */
+    public static String addCommas2(int numberToAddCommas) {
+
+        String str = "UGX" + String.valueOf(numberToAddCommas).replaceAll("/\\B(?=(\\d{3})+(?!\\d))/g", ",");
+
+        logger.debug("Formatted amount string is: " + str);
+
+        return str;
+    }
+
+    /**
+     * Add (a) comma(s) to a number
+     *
+     * @param numberToAddCommas
+     * @return
+     */
+    public static String addCommasAndCurrency(int numberToAddCommas) {
+
+        DecimalFormat myFormatter = new DecimalFormat("#,###");
+        String output = "UGX" + myFormatter.format(numberToAddCommas);
+
+        logger.debug("Formatted amount string is: " + output);
+
+        return output;
+
+    }
+
+    public static int getNH(int terminalHeight, LayoutContentType layout) {
+        return GeneralUtils.roundUpToNextInt(terminalHeight * layout.getNH());
+    }
+
+    public static int getNW(int terminalWidth, LayoutContentType layout) {
+        return GeneralUtils.roundUpToNextInt(terminalWidth * layout.getNW());
+    }
+
+    public static int getNX(int terminalWidth, LayoutContentType layout) {
+        return GeneralUtils.roundUpToNextInt(terminalWidth * layout.getNX());
+    }
+
+    public static int getNY(int terminalHeight, LayoutContentType layout) {
+        return GeneralUtils.roundUpToNextInt(terminalHeight * layout.getNY());
     }
 
 }
