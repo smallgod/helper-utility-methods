@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -283,6 +284,71 @@ public class FileUtilities {
         }
     }
 
+    public static long getFileCode(String file_path, long file_id) {
+        int HEAD_LEN = 32;
+        int TAIL_LEN = 32;
+
+        int BLOCK_SIZE = 64;
+        int BLOCK_NUM = 30;
+        int CHECK_LEN = HEAD_LEN + BLOCK_SIZE * BLOCK_NUM + TAIL_LEN;
+
+        RandomAccessFile fs = null;
+        byte[] buf = null;
+        try {
+            File file = new File(file_path);
+            if ((!file.exists()) || (!file.isFile())) {
+                throw new IllegalStateException("cannot find file: " + file_path);
+            }
+            int file_id_low = (int) (file_id & 0xFFFFFFFF);
+            long size = file.length();
+            fs = new RandomAccessFile(file, "r");
+
+            buf = new byte[CHECK_LEN];
+
+            if (size <= CHECK_LEN) {
+                readToBuffer(fs, buf, 0, (int) size);
+                for (int i = (int) size; i < buf.length; i++) {
+                    buf[i] = 0;
+                }
+            } else {
+                int dwDataLen = 0;
+                readToBuffer(fs, buf, dwDataLen, HEAD_LEN);
+                dwDataLen += HEAD_LEN;
+
+                long interval = (size - CHECK_LEN) / BLOCK_NUM;
+                if (interval > 0L) {
+                    int i = 0;
+                    for (i = 0; i < BLOCK_NUM; i++) {
+                        fs.seek(HEAD_LEN + i * (interval + BLOCK_SIZE));
+                        readToBuffer(fs, buf, dwDataLen, BLOCK_SIZE);
+                        dwDataLen += BLOCK_SIZE;
+                    }
+                } else {
+                    readToBuffer(fs, buf, dwDataLen, BLOCK_SIZE * BLOCK_NUM);
+                    dwDataLen += BLOCK_SIZE * BLOCK_NUM;
+                }
+
+                fs.seek(size - TAIL_LEN);
+                readToBuffer(fs, buf, dwDataLen, TAIL_LEN);
+            }
+
+            CRC32 crc32 = new CRC32();
+            crc32.update(buf);
+            return crc32.getValue();
+        } catch (IOException ioex) {
+            throw new RuntimeException(ioex);
+        } finally {
+            buf = null;
+            if (fs != null) {
+                try {
+                    fs.close();
+                } catch (IOException localIOException2) {
+                    logger.error("Error Getting FileCode: " + localIOException2.getMessage());
+                }
+            }
+        }
+    }
+
     public static long getFileSize(String file_path) {
         File file = new File(file_path);
         if ((!file.exists()) || (!file.isFile())) {
@@ -291,7 +357,7 @@ public class FileUtilities {
         return file.length();
     }
 
-    protected static long getFileCRC(String file_path) {
+    public static long getFileCRC(String file_path) {
         File file = new File(file_path);
         if ((!file.exists()) || (!file.isFile())) {
             throw new IllegalArgumentException("cannot find file: " + file_path);
@@ -383,6 +449,23 @@ public class FileUtilities {
 
             return Boolean.FALSE;
         }
+    }
+
+    protected static int readToBuffer(RandomAccessFile fs, byte[] buffer, int offset, int read_size) throws IOException {
+        if ((fs == null) || (buffer == null) || (read_size == 0) || (offset + read_size > buffer.length)) {
+            throw new IllegalArgumentException("invalid argument");
+        }
+        int dwLen = 0;
+        int dwRead = 0;
+        while (dwRead < read_size) {
+            dwLen = fs.read(buffer, offset + dwRead, read_size - dwRead);
+            if (dwLen <= 0) {
+                throw new IOException("read file exception, file length is invalid");
+            }
+            dwRead += dwLen;
+        }
+
+        return dwRead;
     }
 
     /**
