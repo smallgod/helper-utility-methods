@@ -526,19 +526,19 @@ public class GeneralUtils {
     }
 
     public static int getNH(int terminalHeight, LayoutContentType layout) {
-        return GeneralUtils.roundUpToNextInt(terminalHeight * layout.getNH());
+        return GeneralUtils.roundUpToNextInt((terminalHeight * layout.getNH())/100);
     }
 
     public static int getNW(int terminalWidth, LayoutContentType layout) {
-        return GeneralUtils.roundUpToNextInt(terminalWidth * layout.getNW());
+        return GeneralUtils.roundUpToNextInt((terminalWidth * layout.getNW())/100);
     }
 
     public static int getNX(int terminalWidth, LayoutContentType layout) {
-        return GeneralUtils.roundUpToNextInt(terminalWidth * layout.getNX());
+        return GeneralUtils.roundUpToNextInt((terminalWidth * layout.getNX())/100);
     }
 
     public static int getNY(int terminalHeight, LayoutContentType layout) {
-        return GeneralUtils.roundUpToNextInt(terminalHeight * layout.getNY());
+        return GeneralUtils.roundUpToNextInt((terminalHeight * layout.getNY())/100);
     }
 
 }

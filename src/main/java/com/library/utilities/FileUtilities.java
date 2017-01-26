@@ -435,8 +435,13 @@ public class FileUtilities {
 
     public static boolean isNewFileCreated(String filePath) throws IOException {
 
+        logger.debug("IsNewFileCreated called!");
+        
         File file = new File(filePath);
         if (!file.exists()) {
+            
+            logger.debug("Gonna create new file");
+            
             //check if parent dir exists
             if (!(file.getParentFile().exists())) {
                 logger.debug("Creating DIRs: " + file);
@@ -449,6 +454,8 @@ public class FileUtilities {
 
             return Boolean.FALSE;
         }
+        
+        
     }
 
     protected static int readToBuffer(RandomAccessFile fs, byte[] buffer, int offset, int read_size) throws IOException {
