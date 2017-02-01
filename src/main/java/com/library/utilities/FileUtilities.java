@@ -11,12 +11,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.zip.CRC32;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -471,6 +475,128 @@ public class FileUtilities {
 
             return Boolean.FALSE;
         }
+
+    }
+
+    public static synchronized Map<String, String> readTextFile(String taskId, String absolutFileName) throws FileNotFoundException, IOException {
+
+        Map<String, String> startIdMap = new HashMap<>();
+
+        FileInputStream fstream = new FileInputStream(absolutFileName);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(fstream))) {
+
+            String strLine;
+
+            while ((strLine = br.readLine()) != null) {
+
+                logger.debug(strLine);
+
+                String[] tokens = strLine.trim().split("=");
+                startIdMap.put(tokens[0], tokens[1]);
+
+            }
+        }
+
+        return startIdMap;
+    }
+
+    /**
+     *
+     * @param taskId
+     * @param newStartId
+     * @param absolutFileName
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static synchronized void updateOrAddTextStartId(String taskId, String newStartId, String absolutFileName) throws FileNotFoundException, IOException {
+
+        String input;
+        try (BufferedReader file = new BufferedReader(new FileReader(absolutFileName))) {
+            String line;
+            input = "";
+            while ((line = file.readLine()) != null) {
+                input += line + '\n';
+            }
+        }
+
+        logger.debug(input); // check that it's inputted right
+
+        //input = input.replace(target, replacement);
+        if (input.matches(taskId + "=\\d+;$")) {
+            logger.debug("Pattern has been matched");
+            input = input.replaceAll(taskId + "=\\d+;$", taskId + "=" + newStartId + ";");
+        } else {
+            logger.debug("Pattern not matched, adding this taskId and newStartId to file");
+            input += taskId + "=" + newStartId + ";" + '\n';
+        }
+
+        // check if the new input is right
+        logger.debug("----------------------------------" + '\n' + input);
+
+        // write the new String with the replaced line OVER the same file
+        FileOutputStream fileOut = new FileOutputStream(absolutFileName);
+        fileOut.write(input.getBytes());
+        fileOut.close();
+
+    }
+
+    /**
+     *
+     * @param taskIdStartIdMap
+     * @param absolutFileName
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static synchronized void addMultipleTextStartIds(Map<Integer, Long> taskIdStartIdMap, String absolutFileName) throws FileNotFoundException, IOException {
+
+        String line = "";
+        for (Map.Entry<Integer, Long> entry : taskIdStartIdMap.entrySet()) {
+
+            int taskId = entry.getKey();
+            long newStartId = entry.getValue();
+
+            line += taskId + "=" + newStartId + ";" + '\n';
+        }
+
+        // check if the new input is right
+        logger.debug("----------------------------------" + '\n' + line);
+
+        // write the new String with the new contents OVER the same file
+        FileOutputStream fileOut = new FileOutputStream(absolutFileName);
+        fileOut.write(line.getBytes());
+        fileOut.close();
+
+    }
+
+    public static synchronized void updateMultipleTextStartIds(Map<Integer, Long> taskIdStartIdMap, String absolutFileName) throws FileNotFoundException, IOException {
+
+        String input;
+        try (BufferedReader file = new BufferedReader(new FileReader(absolutFileName))) {
+            String line;
+            input = "";
+            while ((line = file.readLine()) != null) {
+                input += line + '\n';
+            }
+        }
+
+        logger.debug(input); // check that it's inputted right
+
+        for (Map.Entry<Integer, Long> entry : taskIdStartIdMap.entrySet()) {
+
+            int taskId = entry.getKey();
+            long newStartId = entry.getValue();
+
+            //input = input.replace(target, replacement);
+            input = input.replaceAll(taskId + "=\\d+;$", taskId + "=" + newStartId + ";");
+        }
+
+        // check if the new input is right
+        logger.debug("----------------------------------" + '\n' + input);
+
+        // write the new String with the replaced line OVER the same file
+        FileOutputStream fileOut = new FileOutputStream(absolutFileName);
+        fileOut.write(input.getBytes());
+        fileOut.close();
 
     }
 
