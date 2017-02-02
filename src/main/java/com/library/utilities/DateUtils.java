@@ -6,6 +6,7 @@
 package com.library.utilities;
 
 import com.library.datamodel.Constants.NamedConstants;
+import java.util.Date;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Period;
@@ -65,10 +66,11 @@ public class DateUtils {
 
         return formattedDate;
     }
-    
+
     /**
      * Get Default DateTimeNow with Kampala timezone and date-time-dash format
-     * @return 
+     *
+     * @return
      */
     public static String getDefaultDateTimeNow() {
 
@@ -168,6 +170,25 @@ public class DateUtils {
         String elapsed = formatter.print(period);
 
         return elapsed;
+    }
+
+    /**
+     * get time now since 1970
+     * 
+     * @return 
+     */
+    public static long getTimeNowInLong() {
+
+        DateTime timeNow = DateTime.now();
+        long time = timeNow.getMillis();
+
+        Date date = new Date();
+        long time2 = date.getTime();
+        
+        logger.debug("time from joda is: " + time);
+        logger.debug("time from jdk is : " + time2);
+
+        return time;
     }
 
 }
