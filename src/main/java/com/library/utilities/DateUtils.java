@@ -9,6 +9,9 @@ import com.library.datamodel.Constants.NamedConstants;
 import java.util.Date;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -25,6 +28,36 @@ public class DateUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(DateUtils.class);
 
+    /**
+     * Pattern - yyyy/MM/dd HH:mm:ss
+     *
+     * @param string
+     * @param dateStringFormat
+     * @return
+     */
+    public static LocalDateTime convertStringToLocalDateTime(String string, String dateStringFormat) {
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(dateStringFormat);
+        LocalDateTime dt = formatter.parseLocalDateTime(string);
+
+        return dt;
+    }
+
+    /**
+     * Pattern - yyyy/MM/dd
+     *
+     * @param string
+     * @param dateStringFormat
+     * @return
+     */
+    public static LocalDate convertStringToLocalDate(String string, String dateStringFormat) {
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(dateStringFormat);
+        LocalDate dt = formatter.parseLocalDate(string);
+
+        return dt;
+    }
+
     //patterns
     //   "dd/MM/yyyy HH:mm:ss"
     /**
@@ -33,7 +66,7 @@ public class DateUtils {
      * @param dateStringFormat
      * @return
      */
-    public static DateTime convertStringToDate(String string, String dateStringFormat) {
+    public static DateTime convertStringToDateTime(String string, String dateStringFormat) {
 
         DateTimeFormatter formatter = DateTimeFormat.forPattern(dateStringFormat);
         DateTime dt = formatter.parseDateTime(string);
@@ -65,6 +98,28 @@ public class DateUtils {
         String formattedDate = formatter.print(kampalTimeNow);
 
         return formattedDate;
+    }
+    
+        /**
+     * Get LocalDateTime now
+     *
+     * @return
+     */
+    public static LocalDateTime getDateTimeNow() {
+
+        return LocalDateTime.now();
+    }
+
+    /**
+     * Get LocalDateTime now
+     *
+     * @param timeZoneStr
+     * @return
+     */
+    public static LocalDateTime getDateTimeNow(String timeZoneStr) {
+
+        DateTimeZone desiredTimeZone = DateTimeZone.forID(timeZoneStr);
+        return LocalDateTime.now(desiredTimeZone);
     }
 
     /**
@@ -174,8 +229,8 @@ public class DateUtils {
 
     /**
      * get time now since 1970
-     * 
-     * @return 
+     *
+     * @return
      */
     public static long getTimeNowInLong() {
 
@@ -184,11 +239,62 @@ public class DateUtils {
 
         Date date = new Date();
         long time2 = date.getTime();
-        
+
         logger.debug("time from joda is: " + time);
         logger.debug("time from jdk is : " + time2);
 
         return time;
+    }
+
+    /**
+     * Get Days between 2 Dates
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static int getDaysBetweenTwoDates(LocalDateTime startDate, LocalDateTime endDate) {
+
+        Days days = Days.daysBetween(startDate.toLocalDate(), endDate.toLocalDate());
+
+        return days.getDays();
+    }
+
+    /**
+     * convert LocalDateTime to String
+     *
+     * @param dateTime
+     * @param dateTimePattern
+     * @return
+     */
+    public static String convertLocalDateTimeToString(LocalDateTime dateTime, String dateTimePattern) {
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(dateTimePattern);
+        String formattedDateTime = dateTime.toString(formatter); // "1986-04-08 12:30"
+
+        return formattedDateTime;
+    }
+
+    public static String convertLocalDateToString(LocalDate dateTime, String dateTimePattern) {
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(dateTimePattern);
+        String formattedDateTime = dateTime.toString(formatter); // "1986-04-08"
+
+        return formattedDateTime;
+    }
+
+    /**
+     * Add days to LocalDateTime
+     *
+     * @param daysToAdd
+     * @return
+     */
+    public static LocalDateTime addDaysToLocalDateTimeNow(int daysToAdd) {
+
+        LocalDateTime dateTime = getDateTimeNow(NamedConstants.KAMPALA_TIME_ZONE);
+        dateTime = dateTime.plusDays(daysToAdd);
+
+        return dateTime;
     }
 
 }

@@ -363,7 +363,6 @@ public class GeneralUtils {
 
         logger.debug(">>> Request Content-type   : " + request.getContentType());
         logger.debug(">>> Request Context-path   : " + request.getContextPath());
-        logger.debug(">>> Request Content-type   : " + request.getContentType());
         logger.debug(">>> Request Content-length : " + request.getContentLength());
         logger.debug(">>> Request Protocol       : " + request.getProtocol());
         logger.debug(">>> Request PathInfo       : " + request.getPathInfo());
