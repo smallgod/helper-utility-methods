@@ -15,8 +15,16 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.library.datamodel.Constants.APIContentType;
+import com.library.datamodel.Constants.EntityName;
 import com.library.datamodel.Constants.NamedConstants;
 import com.library.datamodel.jaxb.config.v1_0.LayoutContentType;
+import com.library.datamodel.model.v1_0.AdPayment;
+import com.library.datamodel.model.v1_0.AdResource;
+import com.library.datamodel.model.v1_0.AdSchedule;
+import com.library.datamodel.model.v1_0.AdScreen;
+import com.library.datamodel.model.v1_0.AdScreenArea;
+import com.library.datamodel.model.v1_0.AdScreenOwner;
+import com.library.datamodel.model.v1_0.AdTerminal;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -34,14 +42,14 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.openide.util.MapFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -49,13 +57,143 @@ import org.slf4j.LoggerFactory;
  */
 public class GeneralUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(GeneralUtils.class);
+    private static final LoggerUtil logger = new LoggerUtil(GeneralUtils.class);
 
     private static final Type stringMapType = new TypeToken<Map<String, Object>>() {
     }.getType();
 
     private static final Type mapInMapType = new TypeToken<Map<String, Map<String, String>>>() {
     }.getType();
+    
+    
+    /**
+     *
+     * @param entityName
+     * @param isCollection
+     * @return
+     */
+    public static Type getEntityType(EntityName entityName, boolean isCollection) {
+
+        Type entityCollectionType = null;
+        Type singleCollectionType = null;
+
+        switch (entityName) {
+
+            case AD_PROGRAM:
+                //if they are many adverts (multiple) we need to read them in as a map????? not so ????
+
+                singleCollectionType = new TypeToken<AdTerminal>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AdTerminal>>() {
+                }.getType();
+
+                break;
+
+            case AD_OWNER:
+                singleCollectionType = new TypeToken<AdScreenOwner>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AdScreenOwner>>() {
+                }.getType();
+
+                break;
+
+            case AD_AREA:
+                singleCollectionType = new TypeToken<AdScreenArea>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AdScreenArea>>() {
+                }.getType();
+                break;
+            //775930087
+
+            case AD_RESOURCE:
+                singleCollectionType = new TypeToken<AdResource>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AdResource>>() {
+                }.getType();
+                break;
+
+            case AD_PAYMENT:
+                singleCollectionType = new TypeToken<AdPayment>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AdPayment>>() {
+                }.getType();
+                break;
+
+            case AD_SCHEDULE:
+                singleCollectionType = new TypeToken<AdSchedule>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AdSchedule>>() {
+                }.getType();
+                break;
+
+            case AD_SCREEN:
+                singleCollectionType = new TypeToken<AdScreen>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AdScreen>>() {
+                }.getType();
+                break;
+
+            case AD_SCREENOWNER:
+                singleCollectionType = new TypeToken<AdScreenOwner>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AdScreenOwner>>() {
+                }.getType();
+                break;
+
+            default:
+                break;
+        }
+
+        if (isCollection) {
+            return entityCollectionType;
+        }
+
+        return singleCollectionType;
+    }
+
+    /**
+     * The following method shuts down an ExecutorService in two phases, first
+     * by calling shutdown to reject incoming tasks, and then calling
+     * shutdownNow, if necessary, to cancel any lingering tasks (timeToWait
+     * time) elapses.
+     *
+     * @param pool the executor service pool
+     */
+    public static void shutdownProcessor(final ExecutorService pool, long timeToWait, TimeUnit timeUnit) {
+
+        logger.info("Executor pool waiting for tasks to complete");
+        pool.shutdown(); // Disable new tasks from being submitted
+
+        try {
+
+            boolean terminatedOK = pool.awaitTermination(timeToWait, timeUnit);
+
+            // Wait a while for existing tasks to terminate
+            if (!terminatedOK) {
+
+                // Wait a while for tasks to respond to being cancelled
+                terminatedOK = pool.awaitTermination(++timeToWait, timeUnit);
+
+                if (!terminatedOK) {
+                    logger.warn("Executor waiting for pending tasks, another " + timeToWait + " " + timeUnit.toString() + "...");
+
+                    pool.shutdownNow(); // Cancel currently executing tasks
+                    logger.warn("Executor ShutdownNow with pending tasks");
+                }
+
+            } else {
+                logger.info("Executor pool completed all tasks and has shut "
+                        + "down normally");
+            }
+        } catch (InterruptedException ie) {
+            logger.error("Executor pool shutdown error: " + ie.getMessage());
+            // (Re-)Cancel if current thread also interrupted
+            pool.shutdownNow();
+
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+    }
 
     /**
      * Convert a JSON string to pretty print version
@@ -156,6 +294,11 @@ public class GeneralUtils {
         return methodName;
     }
 
+    /**
+     * 
+     * @param pairs
+     * @return 
+     */
     public static List<NameValuePair> convertToNameValuePair(Map<String, String> pairs) {
 
         if (pairs == null) {
@@ -525,19 +668,19 @@ public class GeneralUtils {
     }
 
     public static int getNH(int terminalHeight, LayoutContentType layout) {
-        return GeneralUtils.roundUpToNextInt((terminalHeight * layout.getNH())/100);
+        return GeneralUtils.roundUpToNextInt((terminalHeight * layout.getNH()) / 100);
     }
 
     public static int getNW(int terminalWidth, LayoutContentType layout) {
-        return GeneralUtils.roundUpToNextInt((terminalWidth * layout.getNW())/100);
+        return GeneralUtils.roundUpToNextInt((terminalWidth * layout.getNW()) / 100);
     }
 
     public static int getNX(int terminalWidth, LayoutContentType layout) {
-        return GeneralUtils.roundUpToNextInt((terminalWidth * layout.getNX())/100);
+        return GeneralUtils.roundUpToNextInt((terminalWidth * layout.getNX()) / 100);
     }
 
     public static int getNY(int terminalHeight, LayoutContentType layout) {
-        return GeneralUtils.roundUpToNextInt((terminalHeight * layout.getNY())/100);
+        return GeneralUtils.roundUpToNextInt((terminalHeight * layout.getNY()) / 100);
     }
 
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.library.utilities;
 
 import com.library.datamodel.Constants.NamedConstants;
@@ -17,8 +12,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DateUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(DateUtils.class);
+    private static final LoggerUtil logger = new LoggerUtil(DateUtils.class);
 
     /**
      * Pattern - yyyy/MM/dd HH:mm:ss
@@ -99,8 +92,18 @@ public class DateUtils {
 
         return formattedDate;
     }
-    
-        /**
+
+    /**
+     * Get LocalDate now
+     *
+     * @return
+     */
+    public static LocalDate getDateNow() {
+
+        return LocalDate.now();
+    }
+
+    /**
      * Get LocalDateTime now
      *
      * @return
@@ -295,6 +298,22 @@ public class DateUtils {
         dateTime = dateTime.plusDays(daysToAdd);
 
         return dateTime;
+    }
+
+    /**
+     * Compare if 2 Local Dates are equal
+     *
+     * @param dateA
+     * @param dateB
+     * @return
+     */
+    public static boolean isDateEqualTo(LocalDate dateA, LocalDate dateB) {
+
+        if (dateA.compareTo(dateB) == 0) {
+            return Boolean.TRUE;
+        }
+
+        return Boolean.FALSE;
     }
 
 }

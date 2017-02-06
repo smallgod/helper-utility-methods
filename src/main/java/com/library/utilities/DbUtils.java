@@ -5,6 +5,15 @@
  */
 package com.library.utilities;
 
+import com.library.datamodel.Constants.EntityName;
+import com.library.datamodel.model.v1_0.AdClient;
+import com.library.datamodel.model.v1_0.AdPayment;
+import com.library.datamodel.model.v1_0.AdProgram;
+import com.library.datamodel.model.v1_0.AdResource;
+import com.library.datamodel.model.v1_0.AdSchedule;
+import com.library.datamodel.model.v1_0.AdScreen;
+import com.library.datamodel.model.v1_0.AdScreenArea;
+import com.library.datamodel.model.v1_0.AdScreenOwner;
 import java.util.Date;
 
 public final class DbUtils {
@@ -23,5 +32,57 @@ public final class DbUtils {
 
     public static Date NullTo1970(Date date) {
         return date == null ? new Date(0L) : date;
+    }
+    
+    /**
+     * Get the entity type
+     *
+     * @param entity
+     * @return
+     */
+    public static Class getEntityClass(EntityName entity) {
+
+        Class entityType = null;
+
+        switch (entity) {
+
+            case AD_AREA:
+                entityType = AdScreenArea.class;
+                break;
+
+            case AD_OWNER:
+                entityType = AdClient.class;
+                break;
+
+            case AD_PAYMENT:
+                entityType = AdPayment.class;
+                break;
+
+            case AD_PROGRAM:
+
+                entityType = AdProgram.class;
+                break;
+
+            case AD_RESOURCE:
+                entityType = AdResource.class;
+                break;
+
+            case AD_SCHEDULE:
+                entityType = AdSchedule.class;
+                break;
+
+            case AD_SCREEN:
+                entityType = AdScreen.class;
+                break;
+
+            case AD_SCREENOWNER:
+                entityType = AdScreenOwner.class;
+                break;
+
+            default:
+                break;
+        }
+
+        return entityType;
     }
 }
