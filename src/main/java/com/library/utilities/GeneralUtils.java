@@ -18,6 +18,8 @@ import com.library.datamodel.Constants.APIContentType;
 import com.library.datamodel.Constants.EntityName;
 import com.library.datamodel.Constants.NamedConstants;
 import com.library.datamodel.jaxb.config.v1_0.LayoutContentType;
+import com.library.datamodel.model.v1_0.AdClient;
+import com.library.datamodel.model.v1_0.AdMonitor;
 import com.library.datamodel.model.v1_0.AdPayment;
 import com.library.datamodel.model.v1_0.AdResource;
 import com.library.datamodel.model.v1_0.AdSchedule;
@@ -25,6 +27,8 @@ import com.library.datamodel.model.v1_0.AdScreen;
 import com.library.datamodel.model.v1_0.AdScreenArea;
 import com.library.datamodel.model.v1_0.AdScreenOwner;
 import com.library.datamodel.model.v1_0.AdTerminal;
+import com.library.datamodel.model.v1_0.AudienceType;
+import com.library.datamodel.model.v1_0.LocationType;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -64,8 +68,7 @@ public class GeneralUtils {
 
     private static final Type mapInMapType = new TypeToken<Map<String, Map<String, String>>>() {
     }.getType();
-    
-    
+
     /**
      *
      * @param entityName
@@ -140,7 +143,43 @@ public class GeneralUtils {
                 }.getType();
                 break;
 
+            case AD_CLIENT:
+                singleCollectionType = new TypeToken<AdClient>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AdClient>>() {
+                }.getType();
+                break;
+
+            case AD_MONITOR:
+                singleCollectionType = new TypeToken<AdMonitor>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AdMonitor>>() {
+                }.getType();
+                break;
+
+            case AD_TERMINAL:
+                singleCollectionType = new TypeToken<AdTerminal>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AdTerminal>>() {
+                }.getType();
+                break;
+
+            case AUDIENCE_TYPE:
+                singleCollectionType = new TypeToken<AudienceType>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AudienceType>>() {
+                }.getType();
+                break;
+
+            case LOCATION_TYPE:
+                singleCollectionType = new TypeToken<LocationType>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<LocationType>>() {
+                }.getType();
+                break;
+
             default:
+                logger.warn("Unknown Entity: " + entityName + ", bad things bound to happen!!! ");
                 break;
         }
 
@@ -295,9 +334,9 @@ public class GeneralUtils {
     }
 
     /**
-     * 
+     *
      * @param pairs
-     * @return 
+     * @return
      */
     public static List<NameValuePair> convertToNameValuePair(Map<String, String> pairs) {
 
@@ -585,6 +624,20 @@ public class GeneralUtils {
 
         Set<T> set = new HashSet<>(list);
         return set;
+    }
+
+    /**
+     * 
+     * @param <T>
+     * @param list
+     * @return 
+     */
+    public static <T> Object[] convertListToArray(List<T> list) {
+
+        Object[] newArray = new Object[list.size()];
+        newArray = list.toArray(newArray);
+
+        return newArray;
     }
 
     /**
