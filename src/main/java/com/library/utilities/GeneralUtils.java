@@ -21,6 +21,7 @@ import com.library.datamodel.jaxb.config.v1_0.LayoutContentType;
 import com.library.datamodel.model.v1_0.AdClient;
 import com.library.datamodel.model.v1_0.AdMonitor;
 import com.library.datamodel.model.v1_0.AdPayment;
+import com.library.datamodel.model.v1_0.AdProgram;
 import com.library.datamodel.model.v1_0.AdResource;
 import com.library.datamodel.model.v1_0.AdSchedule;
 import com.library.datamodel.model.v1_0.AdScreen;
@@ -53,6 +54,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.openide.util.MapFormat;
 
 /**
@@ -85,9 +89,9 @@ public class GeneralUtils {
             case AD_PROGRAM:
                 //if they are many adverts (multiple) we need to read them in as a map????? not so ????
 
-                singleCollectionType = new TypeToken<AdTerminal>() {
+                singleCollectionType = new TypeToken<AdProgram>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdTerminal>>() {
+                entityCollectionType = new TypeToken<List<AdProgram>>() {
                 }.getType();
 
                 break;
@@ -393,8 +397,14 @@ public class GeneralUtils {
      */
     public static <T> String convertToJson(Object objectToConvert, Class<T> objectType) {
 
-        Gson gson = new Gson();
         //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
+        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
+        gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
+
+        Gson gson = gsonBuilder.create();
+        
         return gson.toJson(objectToConvert, objectType);
     }
 
@@ -408,8 +418,13 @@ public class GeneralUtils {
      */
     public static <T> String convertToJson(Object objectToConvert, Type objectType) {
 
-        Gson gson = new Gson();
         //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
+        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
+        gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
+
+        Gson gson = gsonBuilder.create();
 
         return gson.toJson(objectToConvert, objectType);
     }
@@ -424,7 +439,14 @@ public class GeneralUtils {
      */
     public static <T> T convertFromJson(String stringToConvert, Class<T> objectType) {
 
-        Gson gson = new Gson();
+        //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
+        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
+        gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
+
+        Gson gson = gsonBuilder.create();
+        
         T returnObj = null;
 
         try {
@@ -445,11 +467,16 @@ public class GeneralUtils {
      * @param stringArrayToConvert
      * @param objectType
      * @return a list of converted JSON strings
-     * @throws com.namaraka.recon.exceptiontype.MyCustomException
      */
     public static <T> List<T> convertFromJson(List<String> stringArrayToConvert, Type objectType) {
 
-        Gson gson = new Gson();
+        //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
+        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
+        gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
+
+        Gson gson = gsonBuilder.create();
 
         List list = new ArrayList<>();
 
@@ -476,7 +503,14 @@ public class GeneralUtils {
      */
     public static <T> T convertFromJson(String stringToConvert, Type objectType) throws JsonSyntaxException {
 
-        Gson gson = new Gson();
+        //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
+        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
+        gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
+
+        Gson gson = gsonBuilder.create();
+        
         return gson.fromJson(stringToConvert.trim(), objectType);
     }
 
@@ -627,10 +661,10 @@ public class GeneralUtils {
     }
 
     /**
-     * 
+     *
      * @param <T>
      * @param list
-     * @return 
+     * @return
      */
     public static <T> Object[] convertListToArray(List<T> list) {
 
