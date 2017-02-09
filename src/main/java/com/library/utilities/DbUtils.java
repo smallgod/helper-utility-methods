@@ -7,6 +7,7 @@ package com.library.utilities;
 
 import com.library.datamodel.Constants.EntityName;
 import com.library.datamodel.model.v1_0.AdClient;
+import com.library.datamodel.model.v1_0.AdMonitor;
 import com.library.datamodel.model.v1_0.AdPayment;
 import com.library.datamodel.model.v1_0.AdProgram;
 import com.library.datamodel.model.v1_0.AdResource;
@@ -14,9 +15,15 @@ import com.library.datamodel.model.v1_0.AdSchedule;
 import com.library.datamodel.model.v1_0.AdScreen;
 import com.library.datamodel.model.v1_0.AdScreenArea;
 import com.library.datamodel.model.v1_0.AdScreenOwner;
+import com.library.datamodel.model.v1_0.AdTerminal;
+import com.library.datamodel.model.v1_0.AudienceType;
+import com.library.datamodel.model.v1_0.LocationType;
+import com.library.datamodel.model.v1_0.TimeSlot;
 import java.util.Date;
 
 public final class DbUtils {
+
+    private static final LoggerUtil logger = new LoggerUtil(DbUtils.class);
 
     public static Integer ZeroToNull(int value) {
         return value == 0 ? null : value;
@@ -33,7 +40,7 @@ public final class DbUtils {
     public static Date NullTo1970(Date date) {
         return date == null ? new Date(0L) : date;
     }
-    
+
     /**
      * Get the entity type
      *
@@ -79,7 +86,32 @@ public final class DbUtils {
                 entityType = AdScreenOwner.class;
                 break;
 
+            case AD_CLIENT:
+                entityType = AdClient.class;
+                break;
+
+            case AD_MONITOR:
+                entityType = AdMonitor.class;
+                break;
+
+            case AD_TERMINAL:
+                entityType = AdTerminal.class;
+                break;
+
+            case AUDIENCE_TYPE:
+                entityType = AudienceType.class;
+                break;
+
+            case LOCATION_TYPE:
+                entityType = LocationType.class;
+                break;
+
+            case TIME_SLOT:
+                entityType = TimeSlot.class;
+                break;
+
             default:
+                logger.warn("Entity Type: " + entityType + " NOT found!!");
                 break;
         }
 

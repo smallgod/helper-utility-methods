@@ -17,6 +17,10 @@ import com.google.gson.reflect.TypeToken;
 import com.library.datamodel.Constants.APIContentType;
 import com.library.datamodel.Constants.EntityName;
 import com.library.datamodel.Constants.NamedConstants;
+import static com.library.datamodel.Constants.NamedConstants.FIRST_SLOT_ALLOCATION;
+import static com.library.datamodel.Constants.NamedConstants.SECOND_SLOT_ALLOCATION;
+import static com.library.datamodel.Constants.NamedConstants.SLOTS_IN_HOUR;
+import static com.library.datamodel.Constants.NamedConstants.THIRD_SLOT_ALLOCATION;
 import com.library.datamodel.jaxb.config.v1_0.LayoutContentType;
 import com.library.datamodel.model.v1_0.AdClient;
 import com.library.datamodel.model.v1_0.AdMonitor;
@@ -30,6 +34,7 @@ import com.library.datamodel.model.v1_0.AdScreenOwner;
 import com.library.datamodel.model.v1_0.AdTerminal;
 import com.library.datamodel.model.v1_0.AudienceType;
 import com.library.datamodel.model.v1_0.LocationType;
+import com.library.datamodel.model.v1_0.TimeSlot;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -179,6 +184,13 @@ public class GeneralUtils {
                 singleCollectionType = new TypeToken<LocationType>() {
                 }.getType();
                 entityCollectionType = new TypeToken<List<LocationType>>() {
+                }.getType();
+                break;
+
+            case TIME_SLOT:
+                singleCollectionType = new TypeToken<TimeSlot>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<TimeSlot>>() {
                 }.getType();
                 break;
 
@@ -404,7 +416,7 @@ public class GeneralUtils {
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
 
         Gson gson = gsonBuilder.create();
-        
+
         return gson.toJson(objectToConvert, objectType);
     }
 
@@ -446,7 +458,7 @@ public class GeneralUtils {
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
 
         Gson gson = gsonBuilder.create();
-        
+
         T returnObj = null;
 
         try {
@@ -510,7 +522,7 @@ public class GeneralUtils {
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
 
         Gson gson = gsonBuilder.create();
-        
+
         return gson.fromJson(stringToConvert.trim(), objectType);
     }
 
@@ -770,4 +782,74 @@ public class GeneralUtils {
         return GeneralUtils.roundUpToNextInt((terminalHeight * layout.getNY()) / 100);
     }
 
+    /**
+     * Is given number a Prime
+     *
+     * @param n
+     * @return
+     */
+    public static boolean isPrime(long n) {
+        // fast even test.
+        if (n > 2 && (n & 1) == 0) {
+            return false;
+        }
+        // only odd factors need to be tested up to n^0.5
+        for (int i = 3; i * i <= n; i += 2) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Is given number a Prime
+     *
+     * @param n
+     * @return
+     */
+    public static boolean isPrime(int n) {
+        // fast even test.
+        if (n > 2 && (n & 1) == 0) {
+            return false;
+        }
+        // only odd factors need to be tested up to n^0.5
+        for (int i = 3; i * i <= n; i += 2) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Get the Advert/Program slot allocation order. First we allocate multiples
+     * of 3, then 5, then 2 and lastly all remaining 1s (Primes)
+     *
+     * @return
+     */
+    public static Set<Integer> allocateSlotsForAnHour() {
+
+        Set<Integer> slotAllocateOrder = new HashSet<>();
+
+        for (int slot = 1; slot <= SLOTS_IN_HOUR; slot++) {
+
+            //Order of allocation is 3, 5, 2 and 1(Primes) lastly
+            if (slot % FIRST_SLOT_ALLOCATION == 0) { // 0 & multiples of 3 first
+                slotAllocateOrder.add(slot);
+
+            } else if (slot % SECOND_SLOT_ALLOCATION == 0) { //then multiples of 5
+                slotAllocateOrder.add(slot);
+
+            } else if (slot % THIRD_SLOT_ALLOCATION == 0) { //then 2
+                slotAllocateOrder.add(slot);
+
+            } else if (GeneralUtils.isPrime(slot)) { //primes last
+                slotAllocateOrder.add(slot);
+
+            }
+        }
+
+        return slotAllocateOrder;
+    }
 }

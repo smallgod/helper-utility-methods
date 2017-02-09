@@ -258,7 +258,22 @@ public class DateUtils {
      */
     public static int getDaysBetweenTwoDates(LocalDateTime startDate, LocalDateTime endDate) {
 
+        //Days days = Days.daysBetween(startDate, endDate);
         Days days = Days.daysBetween(startDate.toLocalDate(), endDate.toLocalDate());
+
+        return days.getDays();
+    }
+    
+    /**
+     * Get Days between 2 Dates
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static int getDaysBetweenTwoDates(LocalDate startDate, LocalDate endDate) {
+
+        Days days = Days.daysBetween(startDate, endDate);
 
         return days.getDays();
     }
@@ -298,6 +313,32 @@ public class DateUtils {
         dateTime = dateTime.plusDays(daysToAdd);
 
         return dateTime;
+    }
+    
+    /**
+     * 
+     * @param daysToAdd
+     * @param dateToAddDaysTo
+     * @return 
+     */
+    public static LocalDate addDaysToLocalDate(int daysToAdd, LocalDate dateToAddDaysTo) {
+
+        LocalDate incrementedDate = dateToAddDaysTo.plusDays(daysToAdd);
+
+        return incrementedDate;
+    }
+    
+    /**
+     * 
+     * @param daysToAdd
+     * @param dateToAddDaysTo
+     * @return 
+     */
+    public static LocalDateTime addDaysToLocalDateTime(int daysToAdd, LocalDateTime dateToAddDaysTo) {
+
+        LocalDateTime incrementedDate = dateToAddDaysTo.plusDays(daysToAdd);
+
+        return incrementedDate;
     }
 
     /**
