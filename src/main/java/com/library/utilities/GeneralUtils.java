@@ -838,15 +838,24 @@ public class GeneralUtils {
             if (slot % FIRST_SLOT_ALLOCATION == 0) { // 0 & multiples of 3 first
                 slotAllocateOrder.add(slot);
 
-            } else if (slot % SECOND_SLOT_ALLOCATION == 0) { //then multiples of 5
-                slotAllocateOrder.add(slot);
+            }
+        }
 
-            } else if (slot % THIRD_SLOT_ALLOCATION == 0) { //then 2
+        for (int slot = 1; slot <= SLOTS_IN_HOUR; slot++) {
+            if (slot % SECOND_SLOT_ALLOCATION == 0) { //then multiples of 5
                 slotAllocateOrder.add(slot);
+            }
+        }
 
-            } else if (GeneralUtils.isPrime(slot)) { //primes last
+        for (int slot = 1; slot <= SLOTS_IN_HOUR; slot++) {
+            if (slot % THIRD_SLOT_ALLOCATION == 0) { //then 2
                 slotAllocateOrder.add(slot);
+            }
+        }
 
+        for (int slot = 1; slot <= SLOTS_IN_HOUR; slot++) {
+            if (GeneralUtils.isPrime(slot)) { //primes last
+                slotAllocateOrder.add(slot);
             }
         }
 
