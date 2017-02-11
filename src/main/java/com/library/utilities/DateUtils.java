@@ -2,11 +2,13 @@ package com.library.utilities;
 
 import com.library.datamodel.Constants.NamedConstants;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -173,6 +175,40 @@ public class DateUtils {
     }
 
     /**
+     *
+     * @param dateTimeToFormat
+     * @param dateStringFormat
+     * @return
+     */
+    public static String convetLocalDateToString(LocalDate dateTimeToFormat, String dateStringFormat) {
+
+        if (dateTimeToFormat == null) {
+            logger.warn("Failed to Convert Date, LocalDate to Format is NULL!!");
+            return "";
+        }
+
+        String formattedDate = dateTimeToFormat.toString(dateStringFormat);
+        return formattedDate;
+    }
+
+    /**
+     *
+     * @param dateTimeToFormat
+     * @param dateStringFormat
+     * @return
+     */
+    public static String convetLocalDateToString(LocalDateTime dateTimeToFormat, String dateStringFormat) {
+
+        if (dateTimeToFormat == null) {
+            logger.warn("Failed to Convert Date, LocalDate to Format is NULL!!");
+            return "";
+        }
+
+        String formattedDate = dateTimeToFormat.toString(dateStringFormat);
+        return formattedDate;
+    }
+
+    /**
      * Time difference between startTime and now
      *
      * @param startTime
@@ -263,7 +299,7 @@ public class DateUtils {
 
         return days.getDays();
     }
-    
+
     /**
      * Get Days between 2 Dates
      *
@@ -314,12 +350,12 @@ public class DateUtils {
 
         return dateTime;
     }
-    
+
     /**
-     * 
+     *
      * @param daysToAdd
      * @param dateToAddDaysTo
-     * @return 
+     * @return
      */
     public static LocalDate addDaysToLocalDate(int daysToAdd, LocalDate dateToAddDaysTo) {
 
@@ -327,12 +363,12 @@ public class DateUtils {
 
         return incrementedDate;
     }
-    
+
     /**
-     * 
+     *
      * @param daysToAdd
      * @param dateToAddDaysTo
-     * @return 
+     * @return
      */
     public static LocalDateTime addDaysToLocalDateTime(int daysToAdd, LocalDateTime dateToAddDaysTo) {
 
@@ -355,6 +391,67 @@ public class DateUtils {
         }
 
         return Boolean.FALSE;
+    }
+
+    /**
+     * Convert Time from any form such as Days, Minutes, Seconds to Milliseconds
+     *
+     * @param timeUnit - The TimeUnit we are converting from such as
+     * TimeUnit.Minutes
+     * @param duration
+     * @return
+     */
+    public static long convertToMillis(TimeUnit timeUnit, long duration) {
+
+        return (timeUnit.toMillis(duration));
+    }
+
+    /**
+     * Convert Milliseconds of Day to LocalTime
+     *
+     * @param millisOfDay
+     * @param timeZone
+     * @return
+     */
+    public static LocalTime convertMillisToLocalTime(long millisOfDay, DateTimeZone timeZone) {
+
+        LocalTime localTime = new LocalTime(millisOfDay, timeZone);
+        
+        return localTime;
+
+    }
+
+    /**
+     * Convert LocaTime to String
+     *
+     * @param time
+     * @param timePattern
+     * @return
+     */
+    public static String convertLocalTimeToString(LocalTime time, String timePattern) {
+
+        //time = time.plusSeconds(110);
+        String formattedTime = DateTimeFormat.forPattern(timePattern).print(time);
+
+        return formattedTime;
+
+    }
+    
+    /**
+     * 
+     * @param millisOfDay
+     * @param timeZone
+     * @param timeFormat
+     * @return 
+     */
+    public static String convertMillisToFormattedLocalTime(long millisOfDay, DateTimeZone timeZone, String timeFormat) {
+
+        LocalTime localTime = new LocalTime(millisOfDay, timeZone);
+
+        String formattedTime = DateTimeFormat.forPattern(timeFormat).print(localTime);
+
+        return formattedTime;
+
     }
 
 }

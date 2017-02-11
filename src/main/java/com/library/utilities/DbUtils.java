@@ -16,6 +16,7 @@ import com.library.datamodel.model.v1_0.AdScreen;
 import com.library.datamodel.model.v1_0.AdScreenArea;
 import com.library.datamodel.model.v1_0.AdScreenOwner;
 import com.library.datamodel.model.v1_0.AdTerminal;
+import com.library.datamodel.model.v1_0.AdText;
 import com.library.datamodel.model.v1_0.AudienceType;
 import com.library.datamodel.model.v1_0.LocationType;
 import com.library.datamodel.model.v1_0.TimeSlot;
@@ -108,6 +109,10 @@ public final class DbUtils {
 
             case TIME_SLOT:
                 entityType = TimeSlot.class;
+                break;
+
+            case AD_TEXT:
+                entityType = AdText.class;
                 break;
 
             default:
