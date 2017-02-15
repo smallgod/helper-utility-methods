@@ -32,6 +32,7 @@ import com.library.datamodel.model.v1_0.AdScreen;
 import com.library.datamodel.model.v1_0.AdScreenArea;
 import com.library.datamodel.model.v1_0.AdScreenOwner;
 import com.library.datamodel.model.v1_0.AdTerminal;
+import com.library.datamodel.model.v1_0.AdText;
 import com.library.datamodel.model.v1_0.AudienceType;
 import com.library.datamodel.model.v1_0.LocationType;
 import com.library.datamodel.model.v1_0.TimeSlot;
@@ -191,6 +192,13 @@ public class GeneralUtils {
                 singleCollectionType = new TypeToken<TimeSlot>() {
                 }.getType();
                 entityCollectionType = new TypeToken<List<TimeSlot>>() {
+                }.getType();
+                break;
+
+            case AD_TEXT:
+                singleCollectionType = new TypeToken<AdText>() {
+                }.getType();
+                entityCollectionType = new TypeToken<List<AdText>>() {
                 }.getType();
                 break;
 
@@ -411,6 +419,14 @@ public class GeneralUtils {
 
         //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
         GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setPrettyPrinting();
+        
+        //gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
+        GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
+        graphAdapterBuilder
+                .addType(AdScreenOwner.class)
+                .addType(AdProgram.class).registerOn(gsonBuilder);
         gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
@@ -432,6 +448,14 @@ public class GeneralUtils {
 
         //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
         GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setPrettyPrinting();
+        
+        //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
+        //gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
+        graphAdapterBuilder
+                .addType(AdScreenOwner.class)
+                .addType(AdProgram.class).registerOn(gsonBuilder);
         gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
@@ -453,6 +477,14 @@ public class GeneralUtils {
 
         //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
         GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setPrettyPrinting();
+        
+        //gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
+        GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
+        graphAdapterBuilder
+                .addType(AdScreenOwner.class)
+                .addType(AdProgram.class).registerOn(gsonBuilder);
         gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
@@ -484,6 +516,13 @@ public class GeneralUtils {
 
         //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
         GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setPrettyPrinting();
+        
+        //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
+        GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
+        graphAdapterBuilder
+                .addType(AdScreenOwner.class)
+                .addType(AdProgram.class).registerOn(gsonBuilder);
         gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
@@ -517,6 +556,14 @@ public class GeneralUtils {
 
         //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
         GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setPrettyPrinting();
+
+        //gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
+        GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
+        graphAdapterBuilder
+                .addType(AdScreenOwner.class)
+                .addType(AdProgram.class).registerOn(gsonBuilder);
         gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());

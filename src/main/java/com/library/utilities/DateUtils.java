@@ -301,7 +301,8 @@ public class DateUtils {
     }
 
     /**
-     * Get Days between 2 Dates
+     * Get Days between 2 Dates - with an extra day 
+     * to represent that very day (start date)
      *
      * @param startDate
      * @param endDate
@@ -311,7 +312,7 @@ public class DateUtils {
 
         Days days = Days.daysBetween(startDate, endDate);
 
-        return days.getDays();
+        return days.getDays() + 1; //Add the extra day to represent that very day
     }
 
     /**
@@ -389,6 +390,10 @@ public class DateUtils {
         if (dateA.compareTo(dateB) == 0) {
             return Boolean.TRUE;
         }
+        
+//        if(dateA.equals(dateB)){
+//            return Boolean.TRUE;
+//        }
 
         return Boolean.FALSE;
     }
