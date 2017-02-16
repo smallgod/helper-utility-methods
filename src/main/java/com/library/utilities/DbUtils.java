@@ -18,6 +18,8 @@ import com.library.datamodel.model.v1_0.AdScreenOwner;
 import com.library.datamodel.model.v1_0.AdTerminal;
 import com.library.datamodel.model.v1_0.AdText;
 import com.library.datamodel.model.v1_0.AudienceType;
+import com.library.datamodel.model.v1_0.Author;
+import com.library.datamodel.model.v1_0.Book;
 import com.library.datamodel.model.v1_0.LocationType;
 import com.library.datamodel.model.v1_0.TimeSlot;
 import java.util.Date;
@@ -113,6 +115,14 @@ public final class DbUtils {
 
             case AD_TEXT:
                 entityType = AdText.class;
+                break;
+
+            case AUTHOR:
+                entityType = Author.class;
+                break;
+
+            case BOOK:
+                entityType = Book.class;
                 break;
 
             default:
