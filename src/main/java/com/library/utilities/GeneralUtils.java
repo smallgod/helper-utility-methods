@@ -36,7 +36,7 @@ import com.library.datamodel.model.v1_0.AdText;
 import com.library.datamodel.model.v1_0.AudienceType;
 import com.library.datamodel.model.v1_0.Author;
 import com.library.datamodel.model.v1_0.Book;
-import com.library.datamodel.model.v1_0.LocationType;
+import com.library.datamodel.model.v1_0.BusinessType;
 import com.library.datamodel.model.v1_0.TimeSlot;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -99,7 +99,7 @@ public class GeneralUtils {
 
                 singleCollectionType = new TypeToken<AdProgram>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdProgram>>() {
+                entityCollectionType = new TypeToken<Set<AdProgram>>() {
                 }.getType();
 
                 break;
@@ -107,7 +107,7 @@ public class GeneralUtils {
             case AD_OWNER:
                 singleCollectionType = new TypeToken<AdScreenOwner>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdScreenOwner>>() {
+                entityCollectionType = new TypeToken<Set<AdScreenOwner>>() {
                 }.getType();
 
                 break;
@@ -115,7 +115,7 @@ public class GeneralUtils {
             case AD_AREA:
                 singleCollectionType = new TypeToken<AdScreenArea>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdScreenArea>>() {
+                entityCollectionType = new TypeToken<Set<AdScreenArea>>() {
                 }.getType();
                 break;
             //775930087
@@ -123,98 +123,98 @@ public class GeneralUtils {
             case AD_RESOURCE:
                 singleCollectionType = new TypeToken<AdResource>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdResource>>() {
+                entityCollectionType = new TypeToken<Set<AdResource>>() {
                 }.getType();
                 break;
 
             case AD_PAYMENT:
                 singleCollectionType = new TypeToken<AdPayment>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdPayment>>() {
+                entityCollectionType = new TypeToken<Set<AdPayment>>() {
                 }.getType();
                 break;
 
             case AD_SCHEDULE:
                 singleCollectionType = new TypeToken<AdSchedule>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdSchedule>>() {
+                entityCollectionType = new TypeToken<Set<AdSchedule>>() {
                 }.getType();
                 break;
 
             case AD_SCREEN:
                 singleCollectionType = new TypeToken<AdScreen>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdScreen>>() {
+                entityCollectionType = new TypeToken<Set<AdScreen>>() {
                 }.getType();
                 break;
 
             case AD_SCREENOWNER:
                 singleCollectionType = new TypeToken<AdScreenOwner>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdScreenOwner>>() {
+                entityCollectionType = new TypeToken<Set<AdScreenOwner>>() {
                 }.getType();
                 break;
 
             case AD_CLIENT:
                 singleCollectionType = new TypeToken<AdClient>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdClient>>() {
+                entityCollectionType = new TypeToken<Set<AdClient>>() {
                 }.getType();
                 break;
 
             case AD_MONITOR:
                 singleCollectionType = new TypeToken<AdMonitor>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdMonitor>>() {
+                entityCollectionType = new TypeToken<Set<AdMonitor>>() {
                 }.getType();
                 break;
 
             case AD_TERMINAL:
                 singleCollectionType = new TypeToken<AdTerminal>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdTerminal>>() {
+                entityCollectionType = new TypeToken<Set<AdTerminal>>() {
                 }.getType();
                 break;
 
             case AUDIENCE_TYPE:
                 singleCollectionType = new TypeToken<AudienceType>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AudienceType>>() {
+                entityCollectionType = new TypeToken<Set<AudienceType>>() {
                 }.getType();
                 break;
 
             case LOCATION_TYPE:
-                singleCollectionType = new TypeToken<LocationType>() {
+                singleCollectionType = new TypeToken<BusinessType>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<LocationType>>() {
+                entityCollectionType = new TypeToken<Set<BusinessType>>() {
                 }.getType();
                 break;
 
             case TIME_SLOT:
                 singleCollectionType = new TypeToken<TimeSlot>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<TimeSlot>>() {
+                entityCollectionType = new TypeToken<Set<TimeSlot>>() {
                 }.getType();
                 break;
 
             case AD_TEXT:
                 singleCollectionType = new TypeToken<AdText>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<AdText>>() {
+                entityCollectionType = new TypeToken<Set<AdText>>() {
                 }.getType();
                 break;
 
             case AUTHOR:
                 singleCollectionType = new TypeToken<Author>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<Author>>() {
+                entityCollectionType = new TypeToken<Set<Author>>() {
                 }.getType();
                 break;
 
             case BOOK:
                 singleCollectionType = new TypeToken<Book>() {
                 }.getType();
-                entityCollectionType = new TypeToken<List<Book>>() {
+                entityCollectionType = new TypeToken<Set<Book>>() {
                 }.getType();
                 break;
 
@@ -443,7 +443,8 @@ public class GeneralUtils {
         graphAdapterBuilder
                 .addType(Author.class)
                 .addType(AdScreenOwner.class)
-                .addType(AdProgram.class).registerOn(gsonBuilder);
+                //.addType(AdProgram.class)
+                .registerOn(gsonBuilder);
         gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
@@ -473,7 +474,8 @@ public class GeneralUtils {
         graphAdapterBuilder
                 .addType(Author.class)
                 .addType(AdScreenOwner.class)
-                .addType(AdProgram.class).registerOn(gsonBuilder);
+                //.addType(AdProgram.class)
+                .registerOn(gsonBuilder);
         gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
@@ -503,7 +505,8 @@ public class GeneralUtils {
         graphAdapterBuilder
                 .addType(Author.class)
                 .addType(AdScreenOwner.class)
-                .addType(AdProgram.class).registerOn(gsonBuilder);
+                //.addType(AdProgram.class)
+                .registerOn(gsonBuilder);
         gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
@@ -542,7 +545,8 @@ public class GeneralUtils {
         graphAdapterBuilder
                 .addType(Author.class)
                 .addType(AdScreenOwner.class)
-                .addType(AdProgram.class).registerOn(gsonBuilder);
+                //.addType(AdProgram.class)
+                .registerOn(gsonBuilder);
         gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
@@ -584,7 +588,8 @@ public class GeneralUtils {
         graphAdapterBuilder
                 .addType(Author.class)
                 .addType(AdScreenOwner.class)
-                .addType(AdProgram.class).registerOn(gsonBuilder);
+                //.addType(AdProgram.class)
+                .registerOn(gsonBuilder);
         gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
         gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
