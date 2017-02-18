@@ -106,6 +106,15 @@ public class DateUtils {
     }
 
     /**
+     * Get LocalTime now
+     *
+     * @return
+     */
+    public static LocalTime getTimeNow() {
+        return LocalTime.now();
+    }
+
+    /**
      * Get LocalDateTime now
      *
      * @return
@@ -301,8 +310,8 @@ public class DateUtils {
     }
 
     /**
-     * Get Days between 2 Dates - with an extra day 
-     * to represent that very day (start date)
+     * Get Days between 2 Dates - with an extra day to represent that very day
+     * (start date)
      *
      * @param startDate
      * @param endDate
@@ -354,11 +363,11 @@ public class DateUtils {
 
     /**
      *
-     * @param daysToAdd
      * @param dateToAddDaysTo
+     * @param daysToAdd
      * @return
      */
-    public static LocalDate addDaysToLocalDate(int daysToAdd, LocalDate dateToAddDaysTo) {
+    public static LocalDate addDaysToLocalDate(LocalDate dateToAddDaysTo, int daysToAdd) {
 
         LocalDate incrementedDate = dateToAddDaysTo.plusDays(daysToAdd);
 
@@ -390,11 +399,10 @@ public class DateUtils {
         if (dateA.compareTo(dateB) == 0) {
             return Boolean.TRUE;
         }
-        
+
 //        if(dateA.equals(dateB)){
 //            return Boolean.TRUE;
 //        }
-
         return Boolean.FALSE;
     }
 
@@ -421,7 +429,7 @@ public class DateUtils {
     public static LocalTime convertMillisToLocalTime(long millisOfDay, DateTimeZone timeZone) {
 
         LocalTime localTime = new LocalTime(millisOfDay, timeZone);
-        
+
         return localTime;
 
     }
@@ -441,13 +449,13 @@ public class DateUtils {
         return formattedTime;
 
     }
-    
+
     /**
-     * 
+     *
      * @param millisOfDay
      * @param timeZone
      * @param timeFormat
-     * @return 
+     * @return
      */
     public static String convertMillisToFormattedLocalTime(long millisOfDay, DateTimeZone timeZone, String timeFormat) {
 
