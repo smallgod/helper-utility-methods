@@ -46,6 +46,7 @@ import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -715,6 +716,30 @@ public class GeneralUtils {
 
         Random r = new Random(System.currentTimeMillis());
         return 10000 + r.nextInt(20000);
+    }
+
+    /**
+     * Return a nice string representation of the array
+     *
+     * @param iterable
+     * @return
+     */
+    public static String getPrintableIterable(Iterable iterable) {
+
+        return (String.join(",", iterable));
+
+    }
+
+    /**
+     * Get a printable array string
+     * 
+     * @param <T>
+     * @param collection
+     * @return 
+     */
+    public static <T> String getPrintableArray(Set<T> collection) {
+
+        return (Arrays.toString(collection.toArray()));
     }
 
     /**

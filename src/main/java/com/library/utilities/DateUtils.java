@@ -409,7 +409,7 @@ public class DateUtils {
     /**
      * Convert Time from any form such as Days, Minutes, Seconds to Milliseconds
      *
-     * @param timeUnit - The TimeUnit we are converting from such as
+     * @param timeUnit The TimeUnit we are converting from such as
      * TimeUnit.Minutes
      * @param duration
      * @return
@@ -432,6 +432,18 @@ public class DateUtils {
 
         return localTime;
 
+    }
+
+    /**
+     * Convert millis to Hour of Day
+     *
+     * @param millisOfDay
+     * @return
+     */
+    public static int convertMillisToHourOfDay(long millisOfDay) {
+
+        LocalTime localTime = new LocalTime(millisOfDay);
+        return localTime.getHourOfDay();
     }
 
     /**
