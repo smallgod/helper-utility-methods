@@ -232,6 +232,12 @@ public class BindXmlAndPojo {
         //Unmarshaller unmarshaller = jc.createUnmarshaller();
         //unmarshaller.setSchema(schema);
         File file = new File(xmlFilePath);
+        
+        if(file.exists()){
+            System.out.println("File exists here in xmlFileToObject");
+        } else {
+            System.err.println("File DOESN'T exists here in xmlFileToObject");
+        }
 
         InputStream inputStream = new FileInputStream(file);
         Reader reader = new InputStreamReader(inputStream, "UTF-8");

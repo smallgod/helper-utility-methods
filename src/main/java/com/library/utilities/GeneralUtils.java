@@ -50,6 +50,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -732,10 +733,10 @@ public class GeneralUtils {
 
     /**
      * Get a printable array string
-     * 
+     *
      * @param <T>
      * @param collection
-     * @return 
+     * @return
      */
     public static <T> String getPrintableArray(Set<T> collection) {
 
@@ -928,7 +929,7 @@ public class GeneralUtils {
      */
     public static Set<Integer> allocateSlotsForAnHour() {
 
-        Set<Integer> slotAllocateOrder = new HashSet<>();
+        Set<Integer> slotAllocateOrder = new LinkedHashSet<>(); //linked has set maintains order of insertion
 
         for (int slot = 1; slot <= SLOTS_IN_HOUR; slot++) {
 
@@ -936,27 +937,61 @@ public class GeneralUtils {
             if (slot % FIRST_SLOT_ALLOCATION == 0) { // 0 & multiples of 3 first
                 slotAllocateOrder.add(slot);
 
+                logger.debug("Adding slot : " + slot);
+
             }
         }
 
         for (int slot = 1; slot <= SLOTS_IN_HOUR; slot++) {
             if (slot % SECOND_SLOT_ALLOCATION == 0) { //then multiples of 5
                 slotAllocateOrder.add(slot);
+
+                logger.debug("Adding slot : " + slot);
             }
         }
 
         for (int slot = 1; slot <= SLOTS_IN_HOUR; slot++) {
             if (slot % THIRD_SLOT_ALLOCATION == 0) { //then 2
                 slotAllocateOrder.add(slot);
+
+                logger.debug("Adding slot : " + slot);
             }
         }
 
         for (int slot = 1; slot <= SLOTS_IN_HOUR; slot++) {
             if (GeneralUtils.isPrime(slot)) { //primes last
                 slotAllocateOrder.add(slot);
+
+                logger.debug("Adding slot : " + slot);
             }
         }
 
+        logger.debug("Slot allocation Order set: " + getPrintableArray(slotAllocateOrder));
+
         return slotAllocateOrder;
     }
+
+    /**
+     * Convert an Object to a long value
+     * 
+     * @param value
+     * @return 
+     */
+    public static long convertObjectToLong(Object value) {
+        
+        logger.debug("Converting Object to long");
+        return (value instanceof Number ? ((Number) value).longValue() : -1);
+    }
+
+    /**
+     * Convert an Object to a double value
+     * 
+     * @param value
+     * @return 
+     */
+    public static double convertObjectToDouble(Object value) {
+        logger.debug("Converting Object to double");
+        return (value instanceof Number ? ((Number) value).doubleValue() : -1.0);
+    }
+
 }
