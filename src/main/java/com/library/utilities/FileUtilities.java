@@ -454,9 +454,9 @@ public class FileUtilities {
         return file.exists() ? file.delete() : true;
     }
 
-    public static boolean isNewFileCreated(String filePath) throws IOException {
+    public static boolean createNewFile(String filePath) throws IOException {
 
-        logger.debug("IsNewFileCreated called!");
+        logger.debug("createNewFile called!");
 
         File file = new File(filePath);
         if (!file.exists()) {

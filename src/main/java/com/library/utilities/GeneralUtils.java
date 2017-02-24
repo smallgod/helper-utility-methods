@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -282,7 +283,8 @@ public class GeneralUtils {
      * @param jsonString
      * @return a well formatted JSON string
      */
-    public static String toPrettyJson(String jsonString) {
+    public static String toPrettyJsonOLD(String jsonString) {
+
         JsonParser parser = new JsonParser();
 
         JsonObject json = parser.parse(jsonString).getAsJsonObject();
@@ -291,6 +293,23 @@ public class GeneralUtils {
         String prettyJson = gson.toJson(json);
 
         return prettyJson;
+    }
+
+    /**
+     * Print out pretty json
+     * 
+     * @param jsonString
+     * @return 
+     */
+    public static String toPrettyJson(String jsonString) {
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonParser jp = new JsonParser();
+        JsonElement je = jp.parse(jsonString);
+        String prettyJson = gson.toJson(je);
+
+        return prettyJson;
+
     }
 
     /**
@@ -973,21 +992,21 @@ public class GeneralUtils {
 
     /**
      * Convert an Object to a long value
-     * 
+     *
      * @param value
-     * @return 
+     * @return
      */
     public static long convertObjectToLong(Object value) {
-        
+
         logger.debug("Converting Object to long");
         return (value instanceof Number ? ((Number) value).longValue() : -1);
     }
 
     /**
      * Convert an Object to a double value
-     * 
+     *
      * @param value
-     * @return 
+     * @return
      */
     public static double convertObjectToDouble(Object value) {
         logger.debug("Converting Object to double");
