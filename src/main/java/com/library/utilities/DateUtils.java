@@ -106,12 +106,28 @@ public class DateUtils {
     }
 
     /**
-     * Get LocalTime now
+     * Get LocalTime now with upto smallest precision
      *
      * @return
      */
     public static LocalTime getTimeNow() {
         return LocalTime.now();
+    }
+
+    /**
+     * Get LocalTime now with upto minute precision
+     *
+     * @return
+     */
+    public static LocalTime getTimeNowToNearestMinute() {
+
+        LocalTime now = LocalTime.now();
+        logger.debug("time here is : " + now);
+
+        now = now.minuteOfHour().roundHalfCeilingCopy(); //round time to the nearest minute
+        logger.debug("And then here: " + now);
+
+        return now;
     }
 
     /**

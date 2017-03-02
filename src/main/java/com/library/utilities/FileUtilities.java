@@ -187,16 +187,19 @@ public class FileUtilities {
         Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
-    public static void copyFile(String source, String dest) {
+    public static boolean copyFile(String source, String dest) {
 
         FileChannel sourceChannel = null;
         FileChannel destChannel = null;
+
+        boolean isCopied = Boolean.FALSE;
 
         try {
 
             sourceChannel = new FileInputStream(source).getChannel();
             destChannel = new FileOutputStream(dest).getChannel();
             long bitesTransfered = destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+            isCopied = Boolean.TRUE;
 
         } catch (FileNotFoundException ex) {
             logger.error("FileNotFoundException occurred while copying file: " + ex.getMessage());
@@ -216,6 +219,7 @@ public class FileUtilities {
             }
         }
 
+        return isCopied;
     }
 
     public static void copyFileUsingChannel(File source, File dest) {
@@ -436,6 +440,8 @@ public class FileUtilities {
 
     public static boolean moveFile(String src, String dest) {
 
+        logger.debug("Renaming file: " + src + ", to: " + dest);
+
         File file_src = new File(src);
         File file_dest = new File(dest);
 
@@ -451,6 +457,10 @@ public class FileUtilities {
 
     public static boolean deleteFile(String path) {
         File file = new File(path);
+        return file.exists() ? file.delete() : true;
+    }
+
+    public static boolean deleteFile(File file) {
         return file.exists() ? file.delete() : true;
     }
 

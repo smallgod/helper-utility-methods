@@ -297,9 +297,9 @@ public class GeneralUtils {
 
     /**
      * Print out pretty json
-     * 
+     *
      * @param jsonString
-     * @return 
+     * @return
      */
     public static String toPrettyJson(String jsonString) {
 
@@ -1011,6 +1011,61 @@ public class GeneralUtils {
     public static double convertObjectToDouble(Object value) {
         logger.debug("Converting Object to double");
         return (value instanceof Number ? ((Number) value).doubleValue() : -1.0);
+    }
+
+    /**
+     *
+     * @param mapOfSchedulesAndProgIds
+     * @return
+     */
+    public static String convertToStringMapTheOfSchedulesAndProgIds(Map<Integer, Long> mapOfSchedulesAndProgIds) {
+
+        String scheduleString = "";
+
+        for (Map.Entry<Integer, Long> entry : mapOfSchedulesAndProgIds.entrySet()) {
+
+            int scheduleTime = entry.getKey();
+            long progEntityId = entry.getValue();
+
+            scheduleString += (progEntityId + "::" + scheduleTime + ";");
+
+        }
+
+        return scheduleString;
+    }
+
+    /**
+     * Convert the String returned from the schedule table column that maps
+     * Schedule times for this screen to their respective program Entity Ids
+     * String is in the format "764::4563;905::2355;" i.e.
+     * schedTime::progEntityId;
+     *
+     * @param scheduleStringFromDatabase
+     * @return
+     */
+    public static Map<Integer, Long> convertToMapStringOfSchedulesAndProgIds(String scheduleStringFromDatabase) {
+
+        logger.debug(">>>> Schedule String, fetched from Database >> " + scheduleStringFromDatabase + " <<<<<<<<");
+
+        String[] progTimeArray = scheduleStringFromDatabase.trim().split("\\s*;\\s*"); // ["764:4563", "905:2355"]
+
+        logger.debug("ProgTimeArray: " + Arrays.toString(progTimeArray));
+
+        //add program ids and their schedule times to an iterable
+        Map<Integer, Long> mapOfScheduleAndProgIds = new HashMap<>();
+
+        for (String progAndTime : progTimeArray) { //"764:4563"
+
+            if (!progAndTime.isEmpty()) {
+
+                long progEntityId = Long.parseLong(progAndTime.split("\\s*::\\s*")[0]);
+                int previouslySchedTime = Integer.parseInt(progAndTime.split("\\s*::\\s*")[1]);
+
+                mapOfScheduleAndProgIds.put(previouslySchedTime, progEntityId);
+            }
+        }
+
+        return mapOfScheduleAndProgIds;
     }
 
 }
