@@ -181,12 +181,14 @@ public class MessageServer {
             return -1;
         }
         try {
+            logger.debug("Message server about to write to outputstream: " + new String(buf, "UTF-8"));
             outputStream = socket.getOutputStream();
             outputStream.write(buf, 0, len);
 
             return len;
         } catch (IOException exp) {
             logger.error("Send data failed:  " + exp.getMessage());
+            exp.printStackTrace();
             return -1;
         } finally {
             try {
@@ -197,17 +199,19 @@ public class MessageServer {
                     socket.close();
                 }
             } catch (IOException localIOException3) {
+                localIOException3.printStackTrace();
+                logger.error("IOException sending message: " + localIOException3.getMessage());
             }
         }
     }
 
     /**
-     * 
+     *
      * @param task_id
-     * @return 
+     * @return
      */
     public boolean loopTaskChanged(int task_id) {
-        
+
         if (task_id == 0) {
             throw new IllegalArgumentException("invalid loop task id");
         }
@@ -242,9 +246,9 @@ public class MessageServer {
     }
 
     /**
-     * 
+     *
      * @param task_id
-     * @return 
+     * @return
      */
     public boolean pluginTaskChanged(int task_id) {
         if (task_id == 0) {
@@ -264,9 +268,9 @@ public class MessageServer {
     }
 
     /**
-     * 
+     *
      * @param config_id
-     * @return 
+     * @return
      */
     public boolean configChanged(int config_id) {
         if (config_id == 0) {
@@ -286,12 +290,12 @@ public class MessageServer {
     }
 
     /**
-     * 
+     *
      * @param device_id
-     * @return 
+     * @return
      */
     public boolean noticeAssignChanged(long device_id) {
-        
+
         if (device_id == 0L) {
             throw new IllegalArgumentException("invalid device id");
         }
@@ -309,12 +313,12 @@ public class MessageServer {
     }
 
     /**
-     * 
+     *
      * @param device_id
-     * @return 
+     * @return
      */
     public boolean captureScreen(long device_id) {
-        
+
         if (device_id == 0L) {
             throw new IllegalArgumentException("invalid device id");
         }
@@ -336,10 +340,10 @@ public class MessageServer {
     }
 
     /**
-     * 
+     *
      * @param device_id
      * @param program_number
-     * @return 
+     * @return
      */
     public boolean demandProgram(long device_id, int program_number) {
         if (device_id == 0L) {
@@ -367,9 +371,9 @@ public class MessageServer {
     }
 
     /**
-     * 
+     *
      * @param device_id
-     * @return 
+     * @return
      */
     public boolean clearContents(long device_id) {
         if (device_id == 0L) {
@@ -393,9 +397,9 @@ public class MessageServer {
     }
 
     /**
-     * 
+     *
      * @param device_id
-     * @return 
+     * @return
      */
     public boolean reboot(long device_id) {
         if (device_id == 0L) {
@@ -415,12 +419,12 @@ public class MessageServer {
     }
 
     /**
-     * 
+     *
      * @param device_id
-     * @return 
+     * @return
      */
     public boolean settingChanged(long device_id) {
-        
+
         if (device_id == 0L) {
             throw new IllegalArgumentException("invalid device id");
         }

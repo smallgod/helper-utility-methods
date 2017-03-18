@@ -7,15 +7,20 @@ import com.advertexpo.addisplay.exceptiontype.MyCustomException;*/
 import com.library.customexception.MyCustomException;
 import com.library.datamodel.Constants.ErrorCategory;
 import com.library.datamodel.Constants.ErrorCode;
+import com.sun.xml.bind.marshaller.CharacterEscapeHandler;
+import com.sun.xml.bind.marshaller.DataWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -63,23 +68,32 @@ public class BindXmlAndPojo {
     public static String objectToXML(Object xmlObject, Class... classToBind) throws JAXBException {
 
         String xmlOutput = null;
+
         StringWriter sw = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(sw);
+        DataWriter dataWriter = new DataWriter(printWriter, "UTF-8", new CharacterEscapeHandler() {
+            @Override
+            public void escape(char[] buf, int start, int len, boolean b, Writer out) throws IOException {
+                out.write(buf, start, len);
+            }
+        });
 
         JAXBContext jc = JAXBContext.newInstance(classToBind);
         Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8"); //NOI18N
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        //marshaller.setProperty(CharacterEscapeHandler.class.getName(), new XmlCharacterHandler());
         //m.marshal( xmlObject, System.out );
-        marshaller.marshal(xmlObject, sw);
+
+        marshaller.marshal(xmlObject, dataWriter);
 
         xmlOutput = sw.toString();
-             
+
         //JAXBContext jaxb = JAXBContext.newInstance("com.ats.vis.services.concentrator", com.ats.vis.services.concentrator.LoadDataRequest.class.getClassLoader());
         //Marshaller marshaller = jaxb.createMarshaller();
-
         return xmlOutput;
     }
-    
+
     //    public static <T> String marshalFile(JAXBElement<T> config, Class classToBind) throws JAXBException {
 //
 //        StringWriter sw = new StringWriter();
@@ -98,8 +112,6 @@ public class BindXmlAndPojo {
 //        //Marshaller marshaller = jaxb.createMarshaller();
 //        return sw.toString();
 //    }
-    
-
     /**
      * Unmarshall information into a java object
      *
@@ -232,17 +244,17 @@ public class BindXmlAndPojo {
         //Unmarshaller unmarshaller = jc.createUnmarshaller();
         //unmarshaller.setSchema(schema);
         File file = new File(xmlFilePath);
-        
-        if(file.exists()){
+
+        if (file.exists()) {
             System.out.println("File exists here in xmlFileToObject");
         } else {
             System.err.println("File DOESN'T exists here in xmlFileToObject");
         }
 
         InputStream inputStream = new FileInputStream(file);
-        Reader reader = new InputStreamReader(inputStream, "UTF-8");
+        Reader reader = new InputStreamReader(inputStream, "utf-8");
         InputSource is = new InputSource(reader);
-        is.setEncoding("UTF-8");
+        is.setEncoding("utf-8");
 
         System.out.println("type of class to unmarshal to is: " + classToBind.getTypeName());
 

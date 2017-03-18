@@ -7,8 +7,11 @@ package com.library.utilities;
 
 import java.io.UnsupportedEncodingException;
 import java.util.zip.CRC32;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class CrcUtil {
+
+    private static final LoggerUtil logger = new LoggerUtil(CrcUtil.class);
 
 //    public static MarqueeXML build(String text) {
 //        MarqueeXML marquee = new MarqueeXML();
@@ -31,23 +34,62 @@ public class CrcUtil {
 //        marquee.setSum(crcValue);
 //        return marquee;
 //    }
-    public static long buildText(String text) {
+    private static byte[] getBytesFromText(String text) {
+
         byte[] byteArray = null;
         try {
-            byteArray = text.getBytes("UTF-8");
+            byteArray = ((text == null || text.length() == 0) ? new byte[0] : text.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException ex) {
             byteArray = text.getBytes();
             ex.printStackTrace();
         }
-        CRC32 crc32 = new CRC32();
-        crc32.update(byteArray);
-        long crcValue = crc32.getValue() & 0xFFFFFFFF;
 
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < byteArray.length; i++) {
-            builder.append(String.format("%02X", new Object[]{Byte.valueOf(byteArray[i])}));
+        return byteArray;
+    }
+
+    /**
+     *
+     * @param text
+     * @return
+     */
+    public static long buildText(String text) {
+
+        byte[] byteArray = getBytesFromText(text);
+
+        CRC32 crc32 = new CRC32();
+        if (byteArray.length > 0) {
+            crc32.update(byteArray);
         }
+
+        //final long crcValue = crc32.getValue() & 0xFFFFFFFF;
+        final long crcValue = crc32.getValue() & 0xFFFFFFFFL;
+
         return crcValue;
+    }
+
+    /**
+     *
+     * @param text
+     * @return
+     */
+    public static String buildCDATASection(final String text) {
+
+        byte[] byteArray = getBytesFromText(text);
+
+        final StringBuilder builder = new StringBuilder();
+        builder.append("<![CDATA[");
+        for (int i = 0; i < byteArray.length; ++i) {
+            builder.append(String.format("%02X", byteArray[i]));
+        }
+        builder.append("]]>");
+
+        //String cdata = StringEscapeUtils.escapeXml("<![CDATA[" + builder.toString() + "]]>");
+        String cdata = builder.toString();
+
+        logger.debug("CDATA section is: " + cdata);
+
+        return cdata;
+
     }
 
 }
