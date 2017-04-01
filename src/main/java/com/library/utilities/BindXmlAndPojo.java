@@ -3,8 +3,8 @@ package com.library.utilities;
 /*import com.advertexpo.addisplay.config.v1_0.Appconfig;
 import com.advertexpo.addisplay.constants.ErrorCategory;
 import com.advertexpo.addisplay.constants.ErrorCode;
-import com.advertexpo.addisplay.exceptiontype.MyCustomException;*/
-import com.library.customexception.MyCustomException;
+import com.advertexpo.addisplay.exceptiontype.MyCustomExceptionOLD;*/
+import com.library.customexception.MyCustomExceptionOLD;
 import com.library.datamodel.Constants.ErrorCategory;
 import com.library.datamodel.Constants.ErrorCode;
 import com.sun.xml.bind.marshaller.CharacterEscapeHandler;
@@ -42,7 +42,7 @@ public class BindXmlAndPojo {
      * @param classToBind
      * @return
      */
-    public static String objectToXMLOLD(Object xmlObject, Class... classToBind) throws MyCustomException {
+    public static String objectToXMLOLD(Object xmlObject, Class... classToBind) throws MyCustomExceptionOLD {
 
         String xmlOutput = null;
         StringWriter sw = new StringWriter();
@@ -57,7 +57,7 @@ public class BindXmlAndPojo {
             //m.marshal( xmlObject, System.out );
             marshaller.marshal(xmlObject, sw);
         } catch (JAXBException e) {
-            throw new MyCustomException("Error marshalling", ErrorCode.INTERNAL_ERR, "Error creating response: " + e.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+            throw new MyCustomExceptionOLD("Error marshalling", ErrorCode.INTERNAL_ERR, "Error creating response: " + e.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
         }
 
         xmlOutput = sw.toString();
@@ -65,6 +65,13 @@ public class BindXmlAndPojo {
         return xmlOutput;
     }
 
+    /**
+     * 
+     * @param xmlObject
+     * @param classToBind
+     * @return
+     * @throws JAXBException 
+     */
     public static String objectToXML(Object xmlObject, Class... classToBind) throws JAXBException {
 
         String xmlOutput = null;

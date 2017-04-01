@@ -9,6 +9,7 @@ import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.joda.time.Minutes;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -70,6 +71,49 @@ public class DateUtils {
     }
 
     /**
+     * Get LocalDateTime now
+     *
+     * @param timeZoneStr
+     * @return
+     */
+    public static LocalDateTime getDateTimeNow(String timeZoneStr) {
+
+        DateTimeZone desiredTimeZone = DateTimeZone.forID(timeZoneStr);
+        return LocalDateTime.now(desiredTimeZone);
+    }
+
+  
+
+    public static LocalDateTime getDateTimeNow() {
+
+        DateTimeZone desiredTimeZone = DateTimeZone.forID(NamedConstants.KAMPALA_TIME_ZONE);
+        return LocalDateTime.now(desiredTimeZone);
+    }
+
+    /**
+     * Get Default DateTimeNow with Kampala timezone and date-time-dash format
+     *
+     * @return
+     */
+    public static String getDefaultDateTimeNow() {
+
+        /*
+        DateTime now = new DateTime();
+        DateTimeZone kampalaTimeZone1 = DateTimeZone.forID(timeZone);
+        DateTime convertedTime1 = now.toDateTime(kampalaTimeZone1);
+         */
+        DateTime dateNow = DateTime.now();
+        DateTimeZone desiredTimeZone = DateTimeZone.forID(NamedConstants.KAMPALA_TIME_ZONE);
+        DateTime dateTime = dateNow.toDateTime(desiredTimeZone);
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(NamedConstants.DATE_TIME_DASH_FORMAT);
+        //DateTime dateTime = formatter.parseDateTime(dateString);
+        String formattedDate = formatter.print(dateTime);
+
+        return formattedDate;
+    }
+
+    /**
      * Get current date-time string
      *
      * @param timeZone
@@ -122,57 +166,18 @@ public class DateUtils {
     public static LocalTime getTimeNowToNearestMinute() {
 
         LocalTime now = LocalTime.now();
-        logger.debug("time here is : " + now);
+        logger.debug("Time here is : " + now);
 
-        now = now.minuteOfHour().roundHalfCeilingCopy(); //round time to the nearest minute
-        logger.debug("And then here: " + now);
+        int hourOfDay = now.getHourOfDay();
+        int minuteOfHOur = now.getMinuteOfHour();
+
+        minuteOfHOur += Minutes.ONE.getMinutes(); //Add one minute to current time to get next biggest minute
+
+        now = new LocalTime(hourOfDay, minuteOfHOur);
+        //now = now.minuteOfHour().roundHalfCeilingCopy(); //round time to the nearest minute, rounds down if less than 30 seconds
+        logger.debug("And then here after rounding it up: " + now);
 
         return now;
-    }
-
-    /**
-     * Get LocalDateTime now
-     *
-     * @return
-     */
-    public static LocalDateTime getDateTimeNow() {
-
-        return LocalDateTime.now();
-    }
-
-    /**
-     * Get LocalDateTime now
-     *
-     * @param timeZoneStr
-     * @return
-     */
-    public static LocalDateTime getDateTimeNow(String timeZoneStr) {
-
-        DateTimeZone desiredTimeZone = DateTimeZone.forID(timeZoneStr);
-        return LocalDateTime.now(desiredTimeZone);
-    }
-
-    /**
-     * Get Default DateTimeNow with Kampala timezone and date-time-dash format
-     *
-     * @return
-     */
-    public static String getDefaultDateTimeNow() {
-
-        /*
-        DateTime now = new DateTime();
-        DateTimeZone kampalaTimeZone1 = DateTimeZone.forID(timeZone);
-        DateTime convertedTime1 = now.toDateTime(kampalaTimeZone1);
-         */
-        DateTime dateNow = DateTime.now();
-        DateTimeZone desiredTimeZone = DateTimeZone.forID(NamedConstants.KAMPALA_TIME_ZONE);
-        DateTime dateTime = dateNow.toDateTime(desiredTimeZone);
-
-        DateTimeFormatter formatter = DateTimeFormat.forPattern(NamedConstants.DATE_TIME_DASH_FORMAT);
-        //DateTime dateTime = formatter.parseDateTime(dateString);
-        String formattedDate = formatter.print(dateTime);
-
-        return formattedDate;
     }
 
     /**

@@ -15,14 +15,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.library.customexception.ErrorWrapper;
+import com.library.customexception.MyCustomException;
 import com.library.datamodel.Constants.APIContentType;
 import com.library.datamodel.Constants.EntityName;
+import com.library.datamodel.Constants.ErrorCode;
 import com.library.datamodel.Constants.NamedConstants;
 import static com.library.datamodel.Constants.NamedConstants.FIRST_SLOT_ALLOCATION;
 import static com.library.datamodel.Constants.NamedConstants.SECOND_SLOT_ALLOCATION;
 import static com.library.datamodel.Constants.NamedConstants.SLOTS_IN_HOUR;
 import static com.library.datamodel.Constants.NamedConstants.THIRD_SLOT_ALLOCATION;
 import com.library.datamodel.jaxb.config.v1_0.LayoutContentType;
+import com.library.datamodel.model.v1_0.AdAPIRequest;
 import com.library.datamodel.model.v1_0.AdClient;
 import com.library.datamodel.model.v1_0.AdMonitor;
 import com.library.datamodel.model.v1_0.AdPayment;
@@ -34,11 +38,11 @@ import com.library.datamodel.model.v1_0.AdScreenArea;
 import com.library.datamodel.model.v1_0.AdScreenOwner;
 import com.library.datamodel.model.v1_0.AdTerminal;
 import com.library.datamodel.model.v1_0.AdText;
-import com.library.datamodel.model.v1_0.AudienceType;
+import com.library.datamodel.model.v1_0.AdAudienceType;
 import com.library.datamodel.model.v1_0.Author;
 import com.library.datamodel.model.v1_0.Book;
-import com.library.datamodel.model.v1_0.BusinessType;
-import com.library.datamodel.model.v1_0.TimeSlot;
+import com.library.datamodel.model.v1_0.AdBusinessType;
+import com.library.datamodel.model.v1_0.AdTimeSlot;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -63,6 +67,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.joda.time.LocalDate;
@@ -180,23 +185,23 @@ public class GeneralUtils {
                 break;
 
             case AUDIENCE_TYPE:
-                singleCollectionType = new TypeToken<AudienceType>() {
+                singleCollectionType = new TypeToken<AdAudienceType>() {
                 }.getType();
-                entityCollectionType = new TypeToken<Set<AudienceType>>() {
+                entityCollectionType = new TypeToken<Set<AdAudienceType>>() {
                 }.getType();
                 break;
 
             case LOCATION_TYPE:
-                singleCollectionType = new TypeToken<BusinessType>() {
+                singleCollectionType = new TypeToken<AdBusinessType>() {
                 }.getType();
-                entityCollectionType = new TypeToken<Set<BusinessType>>() {
+                entityCollectionType = new TypeToken<Set<AdBusinessType>>() {
                 }.getType();
                 break;
 
             case TIME_SLOT:
-                singleCollectionType = new TypeToken<TimeSlot>() {
+                singleCollectionType = new TypeToken<AdTimeSlot>() {
                 }.getType();
-                entityCollectionType = new TypeToken<Set<TimeSlot>>() {
+                entityCollectionType = new TypeToken<Set<AdTimeSlot>>() {
                 }.getType();
                 break;
 
@@ -395,52 +400,25 @@ public class GeneralUtils {
     }
 
     /**
-     *
-     * @param pairs
-     * @return
-     */
-    public static List<NameValuePair> convertToNameValuePair(Map<String, String> pairs) {
-
-        if (pairs == null) {
-            return null;
-        }
-
-        List<NameValuePair> nvpList = new ArrayList<>(pairs.size());
-
-        for (Map.Entry<String, String> entry : pairs.entrySet()) {
-            nvpList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-        }
-
-        return nvpList;
-
-    }
-
-    /**
      * Write a response to calling server client
      *
      * @param response
      * @param responseToWrite
+     * @throws com.library.customexception.MyCustomException
      */
-    public static void writeResponse(HttpServletResponse response, String responseToWrite) {
+    public static void writeResponse(HttpServletResponse response, String responseToWrite) throws MyCustomException {
 
-        PrintWriter out = null;
+        try (PrintWriter out = response.getWriter()) {
 
-        try {
-
-            out = response.getWriter();
             out.write(responseToWrite);
             out.flush();
             response.flushBuffer();
 
         } catch (IOException ex) {
 
-            //throw new MyCustomException("Error writing response to client", ErrorCode.COMMUNICATION_ERR, ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
-            logger.error("Error writing response to client: " + ex.getMessage());
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, "Error writing back client response", "Error writing response to client: " + ex.getMessage());
+            throw error;
 
-        } finally {
-            if (out != null) {
-                out.close();
-            }
         }
     }
 
@@ -513,8 +491,12 @@ public class GeneralUtils {
      * @param stringToConvert
      * @param objectType
      * @return
+     * @throws com.library.customexception.MyCustomException
      */
-    public static <T> T convertFromJson(String stringToConvert, Class<T> objectType) {
+    public static <T> T convertFromJson(String stringToConvert, Class<T> objectType) throws MyCustomException {
+
+        ErrorWrapper errorWrapper = new ErrorWrapper(); //incase it happens
+        Set<ErrorWrapper> errors = new HashSet<>();
 
         //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -538,14 +520,19 @@ public class GeneralUtils {
 
         try {
             returnObj = gson.fromJson(stringToConvert.trim(), objectType);
+            return returnObj;
 
         } catch (JsonSyntaxException jse) {
-            logger.error("JSON Syntax Error while converting from JSON: " + jse.getMessage());
 
-            //throw new MyCustomException("JSON Syntax Error", ErrorCode.INTERNAL_ERR, "Json syntax error converting from JSON: " + jse.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+            errorWrapper.setErrorCode(ErrorCode.PROCESSING_ERR);
+            errorWrapper.setErrorDetails("Error converting from JSON");
+            errorWrapper.setDescription(jse.getMessage());
+
         }
 
-        return returnObj;
+        errors.add(errorWrapper);
+        throw new MyCustomException("", errors);
+
     }
 
     /**
@@ -555,7 +542,10 @@ public class GeneralUtils {
      * @param objectType
      * @return a list of converted JSON strings
      */
-    public static <T> List<T> convertFromJson(List<String> stringArrayToConvert, Type objectType) {
+    public static <T> List<T> convertFromJson(List<String> stringArrayToConvert, Type objectType) throws MyCustomException {
+
+        ErrorWrapper errorWrapper = new ErrorWrapper(); //incase it happens
+        Set<ErrorWrapper> errors = new HashSet<>();
 
         //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -581,12 +571,20 @@ public class GeneralUtils {
 
                 list.add(gson.fromJson(strToConvert.trim(), objectType));
             }
+
+            return list;
+
         } catch (JsonSyntaxException jse) {
-            logger.error("JSON Syntax Error while converting from JSON: " + jse.getMessage());
-            //throw new MyCustomException("JSON Syntax Error", ErrorCode.INTERNAL_ERR, "Json syntax error converting from JSON: " + jse.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+
+            errorWrapper.setErrorCode(ErrorCode.PROCESSING_ERR);
+            errorWrapper.setErrorDetails("Error converting from JSON");
+            errorWrapper.setDescription(jse.getMessage());
 
         }
-        return list;
+
+        errors.add(errorWrapper);
+        throw new MyCustomException("", errors);
+
     }
 
     /**
@@ -596,28 +594,46 @@ public class GeneralUtils {
      * @param stringToConvert
      * @param objectType
      * @return
+     * @throws com.library.customexception.MyCustomException
      */
-    public static <T> T convertFromJson(String stringToConvert, Type objectType) throws JsonSyntaxException {
+    public static <T> T convertFromJson(String stringToConvert, Type objectType) throws MyCustomException {
 
-        //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setPrettyPrinting();
+        ErrorWrapper errorWrapper = new ErrorWrapper(); //incase it happens
+        Set<ErrorWrapper> errors = new HashSet<>();
 
-        //gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
-        GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
-        graphAdapterBuilder
-                .addType(Author.class)
-                .addType(AdScreenOwner.class)
-                //.addType(AdProgram.class)
-                .registerOn(gsonBuilder);
-        gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
-        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
-        gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
+        try {
 
-        Gson gson = gsonBuilder.create();
+            //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.setPrettyPrinting();
 
-        return gson.fromJson(stringToConvert.trim(), objectType);
+            //gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+            //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
+            GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
+            graphAdapterBuilder
+                    .addType(Author.class)
+                    .addType(AdScreenOwner.class)
+                    //.addType(AdProgram.class)
+                    .registerOn(gsonBuilder);
+            gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
+            gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
+            gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
+
+            Gson gson = gsonBuilder.create();
+
+            return gson.fromJson(stringToConvert.trim(), objectType);
+
+        } catch (JsonSyntaxException jse) {
+
+            errorWrapper.setErrorCode(ErrorCode.PROCESSING_ERR);
+            errorWrapper.setErrorDetails("Error converting from JSON");
+            errorWrapper.setDescription(jse.getMessage());
+
+        }
+
+        errors.add(errorWrapper);
+        throw new MyCustomException("", errors);
+
     }
 
     /**
@@ -652,6 +668,19 @@ public class GeneralUtils {
     }
 
     /**
+     * Generate a random alpha numeric string of specified length
+     *
+     * @param stringLength
+     * @return
+     */
+    public static String generateRandomAlphaNumeric(int stringLength) {
+
+        String randomString = RandomStringUtils.randomAlphanumeric(stringLength).toUpperCase();
+
+        return randomString;
+    }
+
+    /**
      * Method will print to a debug file ALL the HttpServletRequest headerNames
      * and their values
      *
@@ -677,23 +706,58 @@ public class GeneralUtils {
     }
 
     /**
+     *
+     * @param request
+     * @return
+     */
+    public static String getRequesterHeaderInfo(HttpServletRequest request) {
+
+        String allHeaders = "";
+
+        Enumeration<String> headerNames = request.getHeaderNames();
+
+        while (headerNames.hasMoreElements()) {
+
+            String headerName = headerNames.nextElement();
+            allHeaders += headerName;
+
+            Enumeration<String> headers = request.getHeaders(headerName);
+            while (headers.hasMoreElements()) {
+
+                String headerValue = headers.nextElement();
+                allHeaders = allHeaders + " = " + headerValue + ";";
+            }
+
+            allHeaders += " <> ";
+        }
+
+        return allHeaders;
+    }
+
+    /**
      * Method logs to a debug file most of the HttpServletRequest parameters
      *
      * @param request HttpServletRequest
+     * @return
      */
-    public static void logRequestInfo(HttpServletRequest request) {
+    public static AdAPIRequest getRequestInfo(HttpServletRequest request) {
 
-        logger.debug(">>> Request Content-type   : " + request.getContentType());
-        logger.debug(">>> Request Context-path   : " + request.getContextPath());
-        logger.debug(">>> Request Content-length : " + request.getContentLength());
-        logger.debug(">>> Request Protocol       : " + request.getProtocol());
-        logger.debug(">>> Request PathInfo       : " + request.getPathInfo());
-        logger.debug(">>> Request Remote Address : " + request.getRemoteAddr());
-        logger.debug(">>> Request Remote Port    : " + request.getRemotePort());
-        logger.debug(">>> Request Server name    : " + request.getServerName());
-        logger.debug(">>> Request Querystring    : " + request.getQueryString());
-        logger.debug(">>> Request URL            : " + request.getRequestURL().toString());
-        logger.debug(">>> Request URI            : " + request.getRequestURI());
+        AdAPIRequest apiRequest = new AdAPIRequest();
+        apiRequest.setContentType(request.getContentType());
+        apiRequest.setContextPath(request.getContextPath());
+        apiRequest.setContentLength(request.getContentLength());
+        apiRequest.setProtocol(request.getProtocol());
+        apiRequest.setPathInfo(request.getPathInfo());
+        apiRequest.setRemoteAddress(request.getRemoteAddr());
+        apiRequest.setRemotePort(request.getRemotePort());
+        apiRequest.setServerName(request.getServerName());
+        apiRequest.setQueryString(request.getQueryString());
+        apiRequest.setRequestUrl(request.getRequestURL().toString());
+        apiRequest.setRequestUri(request.getRequestURI());
+        apiRequest.setServletPath(request.getServletPath());
+
+        return apiRequest;
+
     }
 
     /**
@@ -717,7 +781,13 @@ public class GeneralUtils {
         return xmlInvalidChars.matcher(xml).replaceAll("");
     }
 
-    public static Set<Map.Entry<String, Object>> getJsonDetails(String jsonPaymentRequest) {
+    /**
+     *
+     * @param jsonPaymentRequest
+     * @return
+     * @throws MyCustomException
+     */
+    public static Set<Map.Entry<String, Object>> getJsonDetails(String jsonPaymentRequest) throws MyCustomException {
 
         Map<String, Object> paymentDetails = GeneralUtils.convertFromJson(jsonPaymentRequest, stringMapType);
 
@@ -1066,6 +1136,244 @@ public class GeneralUtils {
         }
 
         return mapOfScheduleAndProgIds;
+    }
+
+    /**
+     * formatMSISDN
+     *
+     * @param MSISDN
+     * @return
+     */
+    public static String formatMSISDN(String MSISDN) {
+
+        if (MSISDN.startsWith("+")) {
+            MSISDN = MSISDN.replace("+", "").trim();
+        }
+        Long phoneNumber;
+        try {
+            phoneNumber = Long.valueOf(MSISDN);
+        } catch (NumberFormatException ex) {
+            logger.error("Could not convert number to a Long value: " + ex.getMessage() + ". So returning the number as it was.");
+            return MSISDN;
+        }
+        int length = phoneNumber.toString().length();
+
+        switch (length) {
+            case 12:
+                logger.info("MSISDN [ "
+                        + MSISDN + "] has length: " + MSISDN.length()
+                        + " when converted to a long value. No fix to be done");
+                break;
+            case 9:
+                logger.info("MSISDN [ "
+                        + MSISDN + "] has length: " + MSISDN.length() + ". "
+                        + " when converted to a long value."
+                        + " An attempt to fix the number by adding a prefix "
+                        + "will be done");
+                if (phoneNumber.toString().startsWith("7")) {
+                    MSISDN = 256 + phoneNumber.toString();
+                }
+                break;
+
+            default:
+                logger.info("MSISDN [ "
+                        + MSISDN + "] has length " + MSISDN.length()
+                        + " when converted to a long value. "
+                        + "Will be sent as is.");
+                break;
+        }
+
+        logger.debug("Returning formatted MSISDN as: " + MSISDN);
+
+        return MSISDN;
+    }
+
+    private static int createRandomInteger(int aStart, long aEnd, Random aRandom) {
+
+        if (aStart > aEnd) {
+            throw new IllegalArgumentException("Start cannot exceed End.");
+        }
+        //get the range, casting to long to avoid overflow problems
+        long range = aEnd - aStart + 1;
+        //logger.info("range>>>>>>>>>>>" + range);
+        // compute a fraction of the range, 0 <= frac < range
+        long fraction = (long) (range * aRandom.nextDouble());
+        //logger.info("fraction>>>>>>>>>>>>>>>>>>>>" + fraction);
+        long randomNumber = fraction + (long) aStart;
+        //logger.info("Generated : " + randomNumber);
+
+        return (int) randomNumber;
+
+    }
+
+    /**
+     *
+     * @return
+     */
+    public static synchronized int generateOTP() {
+
+        int START = 10000;
+        long END = 99999L;
+
+        Random random = new Random();
+        int generatedOTP = createRandomInteger(START, END, random);
+
+        return generatedOTP;
+    }
+
+    /**
+     * getActivationMessage from template
+     *
+     * @param firstName
+     * @param amount
+     * @param outstandingBalance
+     * @param activationCode
+     * @param numberOfActiveDays
+     * @return
+     */
+    public static String getActivationCodeMessage(String firstName, int amount, int outstandingBalance, String activationCode, int numberOfActiveDays) {
+
+        //Object[] params = {"nameRobert", "rhume55@gmail.com"};
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("firstName", firstName);
+        map.put("amount", addCommasAndCurrency(amount));
+        map.put("outstandingBalance", addCommasAndCurrency(outstandingBalance));
+        map.put("activationCode", activationCode);
+        map.put("numberOfActiveDays", String.valueOf(numberOfActiveDays));
+
+        String message = MapFormat.format(NamedConstants.SMS_TEMPLATE_ACT_CODE, map);
+        logger.debug("Activation message going out : " + message);
+
+        return message;
+    }
+
+    /**
+     * getPaymentFailMessage message from Template
+     *
+     * @param firstName
+     * @param amount
+     * @param generatorId
+     * @param statusDescription
+     * @return
+     */
+    public static String getPaymentFailMessage(String firstName, int amount, String generatorId, String statusDescription) {
+
+        //Object[] params = {"nameRobert", "rhume55@gmail.com"};
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("firstName", firstName);
+        map.put("amount", addCommasAndCurrency(amount));
+        map.put("generatorId", generatorId);
+        map.put("statusDescription", statusDescription);
+
+        String message = MapFormat.format(NamedConstants.SMS_PAYMENT_FAILURE, map);
+        logger.debug("Payment Failure message going out : " + message);
+
+        return message;
+    }
+
+    /**
+     * getActivationMessage from template
+     *
+     * @param firstName
+     * @param otp
+     * @return
+     */
+    public static String getOTPMessage(String firstName, int otp) {
+
+        //Object[] params = {"nameRobert", "rhume55@gmail.com"};
+        Map<String, String> map = new HashMap<>();
+
+        map.put("firstName", firstName);
+        map.put("otp", "" + otp);
+        //map.put("telesolaAccount", telesolaAccount);
+
+        String message = MapFormat.format(NamedConstants.SMS_TEMPLATE_OTP, map);
+        logger.debug("OTP message : " + message);
+
+        return message;
+    }
+
+    /**
+     *
+     * @param smsText
+     * @param recipientNumber
+     * @return
+     */
+    public static Map<String, Object> prepareTextMsgParams(String smsText, String recipientNumber) {
+
+        Map<String, Object> paramPairs = new HashMap<>();
+
+        paramPairs.put(NamedConstants.SMS_API_PARAM_USERNAME, NamedConstants.SMS_API_USERNAME);
+        paramPairs.put(NamedConstants.SMS_API_PARAM_PASSOWRD, NamedConstants.SMS_API_PASSWORD);
+        paramPairs.put(NamedConstants.SMS_API_PARAM_SENDER, NamedConstants.SMS_API_SENDER_NAME);
+        paramPairs.put(NamedConstants.SMS_API_PARAM_TEXT, smsText);
+        paramPairs.put(NamedConstants.SMS_API_PARAM_RECIPIENT, recipientNumber);
+
+        return paramPairs;
+    }
+
+    public static List<NameValuePair> convertToNameValuePair(Map<String, Object> pairs) {
+
+        if (pairs == null) {
+            return null;
+        }
+
+        List<NameValuePair> nvpList = new ArrayList<>(pairs.size());
+
+        for (Map.Entry<String, Object> entry : pairs.entrySet()) {
+            nvpList.add(new BasicNameValuePair(entry.getKey(), String.valueOf(entry.getValue())));
+        }
+
+        return nvpList;
+
+    }
+
+    /**
+     * Send out SMS
+     *
+     * @param paramPairs
+     * @return
+     */
+    public static String sendSMS(Map<String, Object> paramPairs) {
+
+        //String response = "Assume an SMS is sent and this is the response, hihihihi, LOLEST!!";
+        //String response = AppEntry.clientPool.sendRemoteRequest("", NamedConstants.SMS_API_URL, paramPairs, HTTPMethod.GET);
+        return "";
+    }
+
+    /**
+     *
+     * @param errorCode
+     * @param errorDescription
+     * @param errorDetails
+     * @return
+     */
+    public static MyCustomException getSingleError(ErrorCode errorCode, String errorDescription, String errorDetails) {
+
+        ErrorWrapper errorWrapper = new ErrorWrapper();
+        Set<ErrorWrapper> errors = new HashSet<>();
+        errorWrapper.setErrorCode(errorCode);
+        errorWrapper.setDescription(errorDescription);
+        errorWrapper.setErrorDetails(errorDetails);
+
+        errors.add(errorWrapper);
+
+        return new MyCustomException("", errors);
+    }
+
+    /**
+     * Generate a User Id account from the client's primaryContact
+     *
+     * @param primaryContact
+     * @return
+     */
+    public static String generateUserId(String primaryContact) {
+        return (primaryContact.substring(3));
+
+        //To-Do
+        //Separate accounts by region, especially for distributors e.g. DKLA774983602 for a Kampala Distributor
     }
 
 }

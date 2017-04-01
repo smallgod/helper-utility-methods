@@ -5,7 +5,7 @@
  */
 package com.library.utilities;
 
-import com.library.customexception.MyCustomException;
+import com.library.customexception.MyCustomExceptionOLD;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -72,10 +72,10 @@ public class FileUtilities {
             exitValue = proc.waitFor();
 
         } catch (IOException | InterruptedException | SecurityException ex) {
-            //throw new MyCustomException("Exception", ErrorCode.COMMUNICATION_ERR, "Exception executing shell command ->> $ " + formattedCmd + " ->> with errormsg: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+            //throw new MyCustomExceptionOLD("Exception", ErrorCode.COMMUNICATION_ERR, "Exception executing shell command ->> $ " + formattedCmd + " ->> with errormsg: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
 
         } catch (Exception ex) {
-            //throw new MyCustomException("Exception", ErrorCode.COMMUNICATION_ERR, "Exception executing shell command ->> $ " + formattedCmd + " ->> with errormsg: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+            //throw new MyCustomExceptionOLD("Exception", ErrorCode.COMMUNICATION_ERR, "Exception executing shell command ->> $ " + formattedCmd + " ->> with errormsg: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
 
         }
 
@@ -83,7 +83,7 @@ public class FileUtilities {
             return Boolean.TRUE;
         } else {
 
-            //throw new MyCustomException("Abnormal termination", ErrorCode.INTERNAL_ERR, "Exception executing shell command ->> $ " + formattedCmd + " terminated with a non-normal flag:: " + exitValue, ErrorCategory.SERVER_ERR_TYPE);
+            //throw new MyCustomExceptionOLD("Abnormal termination", ErrorCode.INTERNAL_ERR, "Exception executing shell command ->> $ " + formattedCmd + " terminated with a non-normal flag:: " + exitValue, ErrorCategory.SERVER_ERR_TYPE);
             return Boolean.FALSE;
         }
     }
@@ -113,7 +113,7 @@ public class FileUtilities {
         }
 
         if (fileExtension == null) {
-            //throw new MyCustomException("NullPointer Exception", ErrorCode.NOT_SUPPORTED_ERR, "Failed to get file Extension", ErrorCategory.CLIENT_ERR_TYPE);
+            //throw new MyCustomExceptionOLD("NullPointer Exception", ErrorCode.NOT_SUPPORTED_ERR, "Failed to get file Extension", ErrorCategory.CLIENT_ERR_TYPE);
         }
 
         logger.info("File Extension got: " + fileExtension);
@@ -157,7 +157,7 @@ public class FileUtilities {
         }
 
         if (newFileName == null) {
-            //throw new MyCustomException("NullPointer Exception", ErrorCode.NOT_SUPPORTED_ERR, "Failed to create new File Name from:: " + oldFileName, ErrorCategory.SERVER_ERR_TYPE);
+            //throw new MyCustomExceptionOLD("NullPointer Exception", ErrorCode.NOT_SUPPORTED_ERR, "Failed to create new File Name from:: " + oldFileName, ErrorCategory.SERVER_ERR_TYPE);
 
         }
         return newFileName.trim();
@@ -254,7 +254,7 @@ public class FileUtilities {
      *
      * @param absFileName
      * @return
-     * @throws MyCustomException
+     * @throws MyCustomExceptionOLD
      */
     public static boolean createFileOnDisk(String absFileName) {
 
@@ -267,16 +267,16 @@ public class FileUtilities {
             isCreated = newFile.createNewFile();
 
         } catch (IOException ex) {
-            //throw new MyCustomException("IO Exception", ErrorCode.COMMUNICATION_ERR, "Failed to create new File : " + ex.getMessage() + " --> FileName: " + absFileName, ErrorCategory.SERVER_ERR_TYPE);
+            //throw new MyCustomExceptionOLD("IO Exception", ErrorCode.COMMUNICATION_ERR, "Failed to create new File : " + ex.getMessage() + " --> FileName: " + absFileName, ErrorCategory.SERVER_ERR_TYPE);
 
         } catch (SecurityException ex) {
-            //throw new MyCustomException("SecurityException", ErrorCode.SERVER_ERR, "Failed to create new File : " + ex.getMessage() + " --> FileName: " + absFileName, ErrorCategory.SERVER_ERR_TYPE);
+            //throw new MyCustomExceptionOLD("SecurityException", ErrorCode.SERVER_ERR, "Failed to create new File : " + ex.getMessage() + " --> FileName: " + absFileName, ErrorCategory.SERVER_ERR_TYPE);
 
         } catch (NullPointerException ex) {
-            //throw new MyCustomException("NPE", ErrorCode.SERVER_ERR, "Failed to create new File : " + ex.getMessage() + " --> FileName: " + absFileName, ErrorCategory.SERVER_ERR_TYPE);
+            //throw new MyCustomExceptionOLD("NPE", ErrorCode.SERVER_ERR, "Failed to create new File : " + ex.getMessage() + " --> FileName: " + absFileName, ErrorCategory.SERVER_ERR_TYPE);
 
         } catch (Exception ex) {
-            //throw new MyCustomException("Exception", ErrorCode.SERVER_ERR, "Failed to create new File : " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+            //throw new MyCustomExceptionOLD("Exception", ErrorCode.SERVER_ERR, "Failed to create new File : " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
 
         }
 
@@ -648,13 +648,13 @@ public class FileUtilities {
      * @return
      * @throws MyCustomException
      */
-//    public static int getNumRecordsMinusHeaders(Sheet sheet) throws MyCustomException {
+//    public static int getNumRecordsMinusHeaders(Sheet sheet) throws MyCustomExceptionOLD {
 //
 //        int noOfPhysicalRows = sheet.getPhysicalNumberOfRows() - 1; //minus HeaderNames row
 //        if (noOfPhysicalRows < 1) {
 //
 //            logger.error("Excel sheet is empty");
-//            throw new MyCustomException("Uploaded file empty", ErrorCode.CLIENT_ERR, "Uploaded file must contain atleast one row of data", ErrorCategory.CLIENT_ERR_TYPE);
+//            throw new MyCustomExceptionOLD("Uploaded file empty", ErrorCode.CLIENT_ERR, "Uploaded file must contain atleast one row of data", ErrorCategory.CLIENT_ERR_TYPE);
 //        }
 //
 //        return noOfPhysicalRows;
@@ -665,7 +665,7 @@ public class FileUtilities {
      * @return Iterator
      * @throws MyCustomException
      */
-//    public static Iterator<Row> getWorkBookRowIteratorHelper(Sheet sheet) throws MyCustomException {
+//    public static Iterator<Row> getWorkBookRowIteratorHelper(Sheet sheet) throws MyCustomExceptionOLD {
 //
 //        Iterator<Row> rowIterator = sheet.iterator();
 //
@@ -678,7 +678,7 @@ public class FileUtilities {
      * @return
      * @throws MyCustomException
      */
-//    public static int countNoOfLinesInFile1(String fileName) throws MyCustomException {
+//    public static int countNoOfLinesInFile1(String fileName) throws MyCustomExceptionOLD {
 //
 //        LineNumberReader lineNumberReader = null;
 //        int lineCount = 0;
@@ -691,10 +691,10 @@ public class FileUtilities {
 //            lineCount = lineNumberReader.getLineNumber();
 //
 //        } catch (FileNotFoundException ex) {
-//            throw new MyCustomException("FileNotFound Error", ErrorCode.INTERNAL_ERR, "File NOT found: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+//            throw new MyCustomExceptionOLD("FileNotFound Error", ErrorCode.INTERNAL_ERR, "File NOT found: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
 //
 //        } catch (IOException ex) {
-//            throw new MyCustomException("IO Error", ErrorCode.COMMUNICATION_ERR, "IO error: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+//            throw new MyCustomExceptionOLD("IO Error", ErrorCode.COMMUNICATION_ERR, "IO error: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
 //
 //        } finally {
 //
@@ -717,7 +717,7 @@ public class FileUtilities {
      * @return
      * @throws MyCustomException
      */
-//    public final static int countNoOfLinesInFile2(String fileName) throws MyCustomException {
+//    public final static int countNoOfLinesInFile2(String fileName) throws MyCustomExceptionOLD {
 //
 //        int lineCount = -1;
 //
@@ -736,7 +736,7 @@ public class FileUtilities {
 //            }
 //
 //        } catch (IOException ex) {
-//            throw new MyCustomException("IO Error", ErrorCode.COMMUNICATION_ERR, "IO error: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+//            throw new MyCustomExceptionOLD("IO Error", ErrorCode.COMMUNICATION_ERR, "IO error: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
 //
 //        }
 //        return lineCount;
@@ -748,7 +748,7 @@ public class FileUtilities {
      * @return
      * @throws com.namaraka.recon.exceptiontype.MyCustomException
      */
-//    public static int countNoOfLinesInFile(String fileName) throws MyCustomException {
+//    public static int countNoOfLinesInFile(String fileName) throws MyCustomExceptionOLD {
 //
 //        FileInputStream fis = null;
 //        int lineCount = -1;
@@ -768,10 +768,10 @@ public class FileUtilities {
 //            }
 //
 //        } catch (FileNotFoundException ex) {
-//            throw new MyCustomException("FileNotFound Error", ErrorCode.INTERNAL_ERR, "File NOT found: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+//            throw new MyCustomExceptionOLD("FileNotFound Error", ErrorCode.INTERNAL_ERR, "File NOT found: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
 //
 //        } catch (IOException ex) {
-//            throw new MyCustomException("IO Error", ErrorCode.COMMUNICATION_ERR, "IO error: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+//            throw new MyCustomExceptionOLD("IO Error", ErrorCode.COMMUNICATION_ERR, "IO error: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
 //
 //        } finally {
 //            try {

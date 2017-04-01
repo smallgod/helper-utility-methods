@@ -17,11 +17,11 @@ import com.library.datamodel.model.v1_0.AdScreenArea;
 import com.library.datamodel.model.v1_0.AdScreenOwner;
 import com.library.datamodel.model.v1_0.AdTerminal;
 import com.library.datamodel.model.v1_0.AdText;
-import com.library.datamodel.model.v1_0.AudienceType;
+import com.library.datamodel.model.v1_0.AdAudienceType;
 import com.library.datamodel.model.v1_0.Author;
 import com.library.datamodel.model.v1_0.Book;
-import com.library.datamodel.model.v1_0.BusinessType;
-import com.library.datamodel.model.v1_0.TimeSlot;
+import com.library.datamodel.model.v1_0.AdBusinessType;
+import com.library.datamodel.model.v1_0.AdTimeSlot;
 import java.util.Date;
 
 public final class DbUtils {
@@ -102,15 +102,15 @@ public final class DbUtils {
                 break;
 
             case AUDIENCE_TYPE:
-                entityType = AudienceType.class;
+                entityType = AdAudienceType.class;
                 break;
 
             case LOCATION_TYPE:
-                entityType = BusinessType.class;
+                entityType = AdBusinessType.class;
                 break;
 
             case TIME_SLOT:
-                entityType = TimeSlot.class;
+                entityType = AdTimeSlot.class;
                 break;
 
             case AD_TEXT:
