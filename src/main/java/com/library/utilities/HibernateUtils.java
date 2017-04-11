@@ -5,6 +5,7 @@
  */
 package com.library.utilities;
 
+import com.library.customexception.MyCustomException;
 import com.library.datamodel.dsm_bridge.TbCustomer;
 import com.library.datamodel.dsm_bridge.TbFile;
 import com.library.datamodel.dsm_bridge.TbFileId;
@@ -31,8 +32,9 @@ public class HibernateUtils {
      *
      * @param customHibernate
      * @return
+     * @throws com.library.customexception.MyCustomException
      */
-    public static synchronized long generateLongIDOld(CustomHibernate customHibernate) {
+    public static synchronized long generateLongIDOld(CustomHibernate customHibernate) throws MyCustomException {
 
         List<TbFileId> fileIdList = customHibernate.fetchOnlyColumn(TbFile.class, "FILE_ID");
 
@@ -59,8 +61,9 @@ public class HibernateUtils {
      *
      * @param customHibernate
      * @return
+     * @throws com.library.customexception.MyCustomException
      */
-    public static synchronized long generateLongIDOLD2(CustomHibernate customHibernate) {
+    public static synchronized long generateLongIDOLD2(CustomHibernate customHibernate) throws MyCustomException {
 
         List<Long> fileIdList = customHibernate.fetchOnlyColumn(TbFile.class, "id.fileId");
 
@@ -85,8 +88,9 @@ public class HibernateUtils {
      * @param classType
      * @param idColumnName
      * @return
+     * @throws com.library.customexception.MyCustomException
      */
-    public static synchronized long generateLongID(CustomHibernate customHibernate, Class classType, String idColumnName) {
+    public static synchronized long generateLongID(CustomHibernate customHibernate, Class classType, String idColumnName) throws MyCustomException {
 
         List<Long> fileIdList = customHibernate.fetchOnlyColumn(classType, idColumnName);
         //List<Long> fileIdList = customHibernate.fetchOnlyColumn(TbFile.class, "id.fileId");
@@ -109,8 +113,9 @@ public class HibernateUtils {
      *
      * @param customHibernate
      * @return
+     * @throws com.library.customexception.MyCustomException
      */
-    public static synchronized int generateIntegerIDOLD2(CustomHibernate customHibernate) {
+    public static synchronized int generateIntegerIDOLD2(CustomHibernate customHibernate) throws MyCustomException {
 
         //List<Integer> idList = customHibernate.fetchOnlyColumn(TbCustomer.class, "CSTM_ID");
         List<Integer> fileIdList = customHibernate.fetchOnlyColumn(TbCustomer.class, "cstmId");
@@ -133,8 +138,9 @@ public class HibernateUtils {
      * @param classType
      * @param idColumnName
      * @return
+     * @throws com.library.customexception.MyCustomException
      */
-    public static synchronized int generateIntegerID(CustomHibernate customHibernate, Class classType, String idColumnName) {
+    public static synchronized int generateIntegerID(CustomHibernate customHibernate, Class classType, String idColumnName) throws MyCustomException {
 
         List<Integer> idList = customHibernate.fetchOnlyColumn(classType, idColumnName);
 

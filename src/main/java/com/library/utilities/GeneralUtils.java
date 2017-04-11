@@ -34,7 +34,7 @@ import com.library.datamodel.model.v1_0.AdProgram;
 import com.library.datamodel.model.v1_0.AdResource;
 import com.library.datamodel.model.v1_0.AdSchedule;
 import com.library.datamodel.model.v1_0.AdScreen;
-import com.library.datamodel.model.v1_0.AdScreenArea;
+import com.library.datamodel.model.v1_0.AdArea;
 import com.library.datamodel.model.v1_0.AdScreenOwner;
 import com.library.datamodel.model.v1_0.AdTerminal;
 import com.library.datamodel.model.v1_0.AdText;
@@ -61,6 +61,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -121,12 +122,12 @@ public class GeneralUtils {
                 break;
 
             case AD_AREA:
-                singleCollectionType = new TypeToken<AdScreenArea>() {
+                singleCollectionType = new TypeToken<AdArea>() {
                 }.getType();
-                entityCollectionType = new TypeToken<Set<AdScreenArea>>() {
+                entityCollectionType = new TypeToken<Set<AdArea>>() {
                 }.getType();
                 break;
-            //775930087
+            //775930087            //775930087
 
             case AD_RESOURCE:
                 singleCollectionType = new TypeToken<AdResource>() {
@@ -430,27 +431,36 @@ public class GeneralUtils {
      * @param objectType
      * @return
      */
-    public static <T> String convertToJson(Object objectToConvert, Class<T> objectType) {
+    public static <T> String convertToJson(Object objectToConvert, Class<T> objectType) throws MyCustomException {
 
-        //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setPrettyPrinting();
+        try {
+            //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.setPrettyPrinting();
 
-        //gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
-        GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
-        graphAdapterBuilder
-                .addType(Author.class)
-                .addType(AdScreenOwner.class)
-                //.addType(AdProgram.class)
-                .registerOn(gsonBuilder);
-        gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
-        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
-        gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
+            //gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+            //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
+            GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
+            graphAdapterBuilder
+                    .addType(Author.class)
+                    .addType(AdScreenOwner.class)
+                    //.addType(AdProgram.class)
+                    .registerOn(gsonBuilder);
+            gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
+            gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
+            gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
 
-        Gson gson = gsonBuilder.create();
+            Gson gson = gsonBuilder.create();
 
-        return gson.toJson(objectToConvert, objectType);
+            return gson.toJson(objectToConvert, objectType);
+
+        } catch (IllegalArgumentException iae) {
+
+            String errorDescription = "Error! Sorry, request cannot be processed now, please try again later";
+            String errorDetails = "IllegalArgumentException occurred trying to convert to JSON: " + iae.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, errorDescription, errorDetails);
+            throw error;
+        }
     }
 
     /**
@@ -461,27 +471,36 @@ public class GeneralUtils {
      * @param objectType
      * @return
      */
-    public static <T> String convertToJson(Object objectToConvert, Type objectType) {
+    public static <T> String convertToJson(Object objectToConvert, Type objectType) throws MyCustomException {
 
-        //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setPrettyPrinting();
+        try {
+            //Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.setPrettyPrinting();
 
-        //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
-        //gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
-        graphAdapterBuilder
-                .addType(Author.class)
-                .addType(AdScreenOwner.class)
-                //.addType(AdProgram.class)
-                .registerOn(gsonBuilder);
-        gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
-        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
-        gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
+            //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
+            //gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+            GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
+            graphAdapterBuilder
+                    .addType(Author.class)
+                    .addType(AdScreenOwner.class)
+                    //.addType(AdProgram.class)
+                    .registerOn(gsonBuilder);
+            gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
+            gsonBuilder.registerTypeAdapter(LocalDateTime.class, new JodaGsonLocalDateTimeConverter());
+            gsonBuilder.registerTypeAdapter(LocalTime.class, new JodaGsonLocalTimeConverter());
 
-        Gson gson = gsonBuilder.create();
+            Gson gson = gsonBuilder.create();
 
-        return gson.toJson(objectToConvert, objectType);
+            return gson.toJson(objectToConvert, objectType);
+
+        } catch (IllegalArgumentException iae) {
+
+            String errorDescription = "Error! Sorry, request cannot be processed now, please try again later";
+            String errorDetails = "IllegalArgumentException occurred trying to convert to JSON: " + iae.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, errorDescription, errorDetails);
+            throw error;
+        }
     }
 
     /**
@@ -755,6 +774,7 @@ public class GeneralUtils {
         apiRequest.setRequestUrl(request.getRequestURL().toString());
         apiRequest.setRequestUri(request.getRequestURI());
         apiRequest.setServletPath(request.getServletPath());
+        apiRequest.setRequestBody("");
 
         return apiRequest;
 
@@ -1207,13 +1227,25 @@ public class GeneralUtils {
     }
 
     /**
-     *
+     * Generate OTP (4-digit PIN)
+     * 
      * @return
      */
     public static synchronized int generateOTP() {
 
-        int START = 10000;
-        long END = 99999L;
+        int START = 1000;
+        long END = 9999L;
+
+        Random random = new Random();
+        int generatedOTP = createRandomInteger(START, END, random);
+
+        return generatedOTP;
+    }
+    
+        public static synchronized int generateInt() {
+
+        int START = 1000;
+        long END = 9999L;
 
         Random random = new Random();
         int generatedOTP = createRandomInteger(START, END, random);
@@ -1376,4 +1408,41 @@ public class GeneralUtils {
         //Separate accounts by region, especially for distributors e.g. DKLA774983602 for a Kampala Distributor
     }
 
+    /**
+     * Convert a set of string objects to a comma delimited String
+     *
+     * @param screenCodes
+     * @return
+     */
+    public static String convertSetToCommaDelString(Set<String> screenCodes) {
+
+        String screenCodeStr = "";
+        if (screenCodes != null) {
+
+            screenCodeStr = String.join(",", screenCodes);
+        }
+
+        //org.apache.commons.lang.StringUtils.join(screenCodes, ",");
+        return screenCodeStr;
+    }
+
+    /**
+     * Convert a comma delimited String to a Set
+     *
+     * @param commaDelString
+     * @return
+     */
+    public static Set<String> convertCommaDelStringToSet(String commaDelString) {
+
+        Set<String> set = new HashSet<>();
+
+        StringTokenizer st = new StringTokenizer(commaDelString, ",");
+        while (st.hasMoreTokens()) {
+            set.add(st.nextToken());
+        }
+
+        //Set<String> hashSet = new HashSet<>(Arrays.asList(commaDelString.split(",")));
+        return set;
+
+    }
 }

@@ -1,5 +1,8 @@
 package com.library.utilities;
 
+import com.library.customexception.MyCustomException;
+import com.library.datamodel.Constants.ErrorCode;
+import com.library.hibernate.CustomHibernate;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,6 +18,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.openide.util.Exceptions;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -22,10 +26,12 @@ import org.xml.sax.SAXException;
 
 public class XmlWriter {
 
+    private static final LoggerUtil LOGGER = new LoggerUtil(XmlWriter.class);
+
     public static void testItOut(String[] args) {
-        
+
         final String xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> <Emp id=\"1\"><name>Pankaj</name><age>25</age> <role>Developer</role><gen>Male</gen></Emp>";
-        
+
         Document doc = convertStringToDocument(xmlStr);
 
         String str = convertDocumentToString(doc);
@@ -33,10 +39,10 @@ public class XmlWriter {
     }
 
     public static String convertDocumentToString(Document doc) {
-        
+
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer;
-        
+
         try {
             transformer = tf.newTransformer();
             // below code to remove XML declaration
@@ -53,10 +59,10 @@ public class XmlWriter {
     }
 
     public static Document convertStringToDocument(String xmlStr) {
-        
+
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
-        
+
         try {
             builder = factory.newDocumentBuilder();
             Document doc = builder.parse(new InputSource(new StringReader(xmlStr)));
@@ -84,16 +90,36 @@ public class XmlWriter {
 
     /**
      * Write an XML string to a file
-     * 
+     *
      * @param xmlSource
      * @param xmlFilePath
-     * @throws IOException 
+     * @throws com.library.customexception.MyCustomException
      */
-    public static void writeStringToFile(String xmlSource, String xmlFilePath) throws IOException {
+    public static void writeStringToFile(String xmlSource, String xmlFilePath) throws MyCustomException {
 
-        FileWriter fw = new FileWriter(xmlFilePath);
-        fw.write(xmlSource);
-        fw.close();
+        FileWriter fw = null;
+        
+        try {
+            
+            fw = new FileWriter(xmlFilePath);
+            fw.write(xmlSource);
+            
+        } catch (IOException ex) {
+            
+            String errorDescription = "Error! Failed to fully upload files";
+            String errorDetails = "Error while trying to upload resource files: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
+            
+        } finally {
+            try {
+                if (fw != null) {
+                    fw.close();
+                }
+            } catch (IOException ex) {
+                LOGGER.error("Failed to close file writer after writing string to file: " + ex.getMessage());
+            }
+        }
     }
 
 }

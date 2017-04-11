@@ -5,7 +5,9 @@
  */
 package com.library.utilities;
 
+import com.library.customexception.MyCustomException;
 import com.library.customexception.MyCustomExceptionOLD;
+import com.library.datamodel.Constants.ErrorCode;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,10 +22,10 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.zip.CRC32;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -39,8 +41,7 @@ public class FileUtilities {
      *
      * @param inputFile
      * @param outputFile
-     * @return true | false if file was converted successfuly
-     * @throws com.namaraka.recon.exceptiontype.MyCustomException
+     * @return true | false if file was converted successfulLy
      */
     public static boolean convertFileToCSV(String inputFile, String outputFile) {
 
@@ -180,14 +181,22 @@ public class FileUtilities {
      *
      * @param source
      * @param dest
-     * @throws IOException
+     * @throws com.library.customexception.MyCustomException
      */
-    public static void copyFile(File source, File dest) throws IOException {
+    public static void copyFile(File source, File dest) throws MyCustomException {
 
-        Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        try {
+            Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
+
+            String errorDescription = "Error! Failed to copy file";
+            String errorDetails = "IO Error occurred while copying file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
+        }
     }
 
-    public static boolean copyFile(String source, String dest) {
+    public static boolean copyFile(String source, String dest) throws MyCustomException {
 
         FileChannel sourceChannel = null;
         FileChannel destChannel = null;
@@ -202,9 +211,19 @@ public class FileUtilities {
             isCopied = Boolean.TRUE;
 
         } catch (FileNotFoundException ex) {
-            logger.error("FileNotFoundException occurred while copying file: " + ex.getMessage());
+
+            String errorDescription = "Error! Failed to copy file";
+            String errorDetails = "FileNotFoundException Error occurred while copying file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.FILE_NOT_FOUND_ERR, errorDescription, errorDetails);
+            throw error;
+
         } catch (IOException ex) {
-            logger.error("IOException occurred while copying file: " + ex.getMessage());
+
+            String errorDescription = "Error! Failed to copy file";
+            String errorDetails = "IO Error occurred while copying file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
+
         } finally {
 
             try {
@@ -222,7 +241,13 @@ public class FileUtilities {
         return isCopied;
     }
 
-    public static void copyFileUsingChannel(File source, File dest) {
+    /**
+     *
+     * @param source
+     * @param dest
+     * @throws MyCustomException
+     */
+    public static void copyFileUsingChannel(File source, File dest) throws MyCustomException {
 
         FileChannel sourceChannel = null;
         FileChannel destChannel = null;
@@ -233,9 +258,19 @@ public class FileUtilities {
             long bitesTransfered = destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
 
         } catch (FileNotFoundException ex) {
-            logger.error("FileNotFoundException occurred while copying file: " + ex.getMessage());
+
+            String errorDescription = "Error! Failed to copy file";
+            String errorDetails = "FileNotFoundException Error occurred while copying file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.FILE_NOT_FOUND_ERR, errorDescription, errorDetails);
+            throw error;
+
         } catch (IOException ex) {
-            logger.error("IOException occurred while copying file: " + ex.getMessage());
+
+            String errorDescription = "Error! Failed to copy file";
+            String errorDetails = "IO Error occurred while copying file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
+
         } finally {
             try {
                 if (sourceChannel != null) {
@@ -254,9 +289,9 @@ public class FileUtilities {
      *
      * @param absFileName
      * @return
-     * @throws MyCustomExceptionOLD
+     * @throws com.library.customexception.MyCustomException
      */
-    public static boolean createFileOnDisk(String absFileName) {
+    public static boolean createFileOnDisk(String absFileName) throws MyCustomException {
 
         boolean isCreated = false;
 
@@ -266,21 +301,45 @@ public class FileUtilities {
             //newFile.mkdirs();
             isCreated = newFile.createNewFile();
 
+            return isCreated;
+
+        } catch (FileNotFoundException ex) {
+
+            String errorDescription = "Error! Failed to create file";
+            String errorDetails = "FileNotFoundException Error occurred while creating file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.FILE_NOT_FOUND_ERR, errorDescription, errorDetails);
+            throw error;
+
         } catch (IOException ex) {
-            //throw new MyCustomExceptionOLD("IO Exception", ErrorCode.COMMUNICATION_ERR, "Failed to create new File : " + ex.getMessage() + " --> FileName: " + absFileName, ErrorCategory.SERVER_ERR_TYPE);
+
+            String errorDescription = "Error! Failed to create file";
+            String errorDetails = "IO Error occurred while creating file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
 
         } catch (SecurityException ex) {
-            //throw new MyCustomExceptionOLD("SecurityException", ErrorCode.SERVER_ERR, "Failed to create new File : " + ex.getMessage() + " --> FileName: " + absFileName, ErrorCategory.SERVER_ERR_TYPE);
+
+            String errorDescription = "Error! Failed to create file";
+            String errorDetails = "SecurityException Error occurred while creating file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.SECURITY_ERR, errorDescription, errorDetails);
+            throw error;
 
         } catch (NullPointerException ex) {
-            //throw new MyCustomExceptionOLD("NPE", ErrorCode.SERVER_ERR, "Failed to create new File : " + ex.getMessage() + " --> FileName: " + absFileName, ErrorCategory.SERVER_ERR_TYPE);
+
+            String errorDescription = "Error! Failed to create file";
+            String errorDetails = "NullPointerException Error creating while copying file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.SERVER_ERR, errorDescription, errorDetails);
+            throw error;
 
         } catch (Exception ex) {
-            //throw new MyCustomExceptionOLD("Exception", ErrorCode.SERVER_ERR, "Failed to create new File : " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
+
+            String errorDescription = "Error! Failed to create file";
+            String errorDetails = "General Error occurred while creating file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.GENERAL_ERR, errorDescription, errorDetails);
+            throw error;
 
         }
 
-        return isCreated;
     }
 
     public static boolean createDirectory(String dir_path) {
@@ -309,7 +368,7 @@ public class FileUtilities {
         }
     }
 
-    public static long getFileCode(String file_path, long file_id) {
+    public static long getFileCode(String file_path, long file_id) throws MyCustomException {
         int HEAD_LEN = 32;
         int TAIL_LEN = 32;
 
@@ -359,9 +418,16 @@ public class FileUtilities {
 
             CRC32 crc32 = new CRC32();
             crc32.update(buf);
+
             return crc32.getValue();
+
         } catch (IOException ioex) {
-            throw new RuntimeException(ioex);
+
+            String errorDescription = "Error! Failed to get File Code";
+            String errorDetails = "IO Error occurred while trying to get the file code: " + ioex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
+
         } finally {
             buf = null;
             if (fs != null) {
@@ -382,7 +448,7 @@ public class FileUtilities {
         return file.length();
     }
 
-    public static long getFileCRC(String file_path) {
+    public static long getFileCRC(String file_path) throws MyCustomException {
         File file = new File(file_path);
         if ((!file.exists()) || (!file.isFile())) {
             throw new IllegalArgumentException("cannot find file: " + file_path);
@@ -421,7 +487,12 @@ public class FileUtilities {
 
             return crc32.getValue();
         } catch (IOException ioex) {
-            throw new RuntimeException(ioex);
+
+            String errorDescription = "Error! Failed to get File CRC (sum)";
+            String errorDetails = "IO Error occurred while trying to get the file CRC (sum): " + ioex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
+
         } finally {
             buf = null;
             try {
@@ -464,7 +535,7 @@ public class FileUtilities {
         return file.exists() ? file.delete() : true;
     }
 
-    public static boolean createNewFile(String filePath) throws IOException {
+    public static boolean createNewFile(String filePath) throws MyCustomException {
 
         logger.debug("createNewFile called!");
 
@@ -478,7 +549,15 @@ public class FileUtilities {
                 logger.debug("Creating DIRs: " + file);
                 file.getParentFile().mkdirs();
             }
-            file.createNewFile();  //Dont create the file yet
+            try {
+                file.createNewFile();  //Dont create the file yet
+            } catch (IOException ex) {
+
+                String errorDescription = "Error occurred while creating new file";
+                String errorDetails = "IO Error occurred while creating new file: " + filePath + "error: " + ex.getMessage();
+                MyCustomException error = GeneralUtils.getSingleError(ErrorCode.DATABASE_ERR, errorDescription, errorDetails);
+                throw error;
+            }
 
             return Boolean.TRUE;
         } else {
@@ -488,11 +567,20 @@ public class FileUtilities {
 
     }
 
-    public static synchronized Map<String, String> readTextFile(String taskId, String absolutFileName) throws FileNotFoundException, IOException {
+    public static synchronized Map<String, String> readTextFile(String taskId, String absolutFileName) throws MyCustomException {
 
         Map<String, String> startIdMap = new HashMap<>();
+        String errorDescription = "Error occurred while reading file";
 
-        FileInputStream fstream = new FileInputStream(absolutFileName);
+        FileInputStream fstream;
+        try {
+            fstream = new FileInputStream(absolutFileName);
+        } catch (FileNotFoundException ex) {
+
+            String errorDetails = "FileNotFoundException Error occurred while reading text file new file: " + absolutFileName + "error: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.FILE_NOT_FOUND_ERR, errorDescription, errorDetails);
+            throw error;
+        }
         try (BufferedReader br = new BufferedReader(new InputStreamReader(fstream))) {
 
             String strLine;
@@ -505,6 +593,11 @@ public class FileUtilities {
                 startIdMap.put(tokens[0], tokens[1]);
 
             }
+        } catch (IOException ex) {
+
+            String errorDetails = "IO Error occurred while creating new file: " + absolutFileName + "error: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
         }
 
         return startIdMap;
@@ -515,18 +608,23 @@ public class FileUtilities {
      * @param taskId
      * @param newStartId
      * @param absolutFileName
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @throws com.library.customexception.MyCustomException
      */
-    public static synchronized void updateOrAddTextStartId(String taskId, String newStartId, String absolutFileName) throws FileNotFoundException, IOException {
+    public static synchronized void updateOrAddTextStartId(String taskId, String newStartId, String absolutFileName) throws MyCustomException {
 
         String input;
+        String errorDescription = "Error! Failed to add or update the text start Id in the file";
         try (BufferedReader file = new BufferedReader(new FileReader(absolutFileName))) {
             String line;
             input = "";
             while ((line = file.readLine()) != null) {
                 input += line + '\n';
             }
+        } catch (IOException ex) {
+
+            String errorDetails = "IO Error occurred while trying to update the text start Id in the file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
         }
 
         logger.debug(input); // check that it's inputted right
@@ -544,22 +642,44 @@ public class FileUtilities {
         logger.debug("----------------------------------" + '\n' + input);
 
         // write the new String with the replaced line OVER the same file
-        FileOutputStream fileOut = new FileOutputStream(absolutFileName);
-        fileOut.write(input.getBytes());
-        fileOut.close();
+        FileOutputStream fileOut = null;
+        try {
+            fileOut = new FileOutputStream(absolutFileName);
+            fileOut.write(input.getBytes());
+        } catch (FileNotFoundException ex) {
 
+            String errorDetails = "FileNotFoundException Error occurred while trying to update the text start Id in the file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.FILE_NOT_FOUND_ERR, errorDescription, errorDetails);
+            throw error;
+
+        } catch (IOException ex) {
+
+            String errorDetails = "IO Error occurred while trying to update the text start Id in the file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
+
+        } finally {
+            try {
+                if (fileOut != null) {
+                    fileOut.close();
+                }
+            } catch (IOException ex) {
+                logger.error("IO error, closing fileOut connection: " + ex.getMessage());
+            }
+
+        }
     }
 
     /**
      *
      * @param taskIdStartIdMap
      * @param absolutFileName
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @throws com.library.customexception.MyCustomException
      */
-    public static synchronized void addMultipleTextStartIds(Map<Integer, Long> taskIdStartIdMap, String absolutFileName) throws FileNotFoundException, IOException {
+    public static synchronized void addMultipleTextStartIds(Map<Integer, Long> taskIdStartIdMap, String absolutFileName) throws MyCustomException {
 
         String line = "";
+        String errorDescription = "Error! Failed to add or update the text start Id in the file";
         for (Map.Entry<Integer, Long> entry : taskIdStartIdMap.entrySet()) {
 
             int taskId = entry.getKey();
@@ -572,24 +692,49 @@ public class FileUtilities {
         logger.debug("----------------------------------" + '\n' + line);
 
         // write the new String with the new contents OVER the same file
-        FileOutputStream fileOut = new FileOutputStream(absolutFileName);
-        fileOut.write(line.getBytes());
-        fileOut.close();
+        FileOutputStream fileOut = null;
+        try {
+            fileOut = new FileOutputStream(absolutFileName);
+            fileOut.write(line.getBytes());
+        } catch (FileNotFoundException ex) {
+
+            String errorDetails = "FileNotFoundException Error occurred while trying to update the text start Id in the file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.FILE_NOT_FOUND_ERR, errorDescription, errorDetails);
+            throw error;
+
+        } catch (IOException ex) {
+
+            String errorDetails = "IO Error occurred while trying to update the text start Id in the file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
+
+        } finally {
+            try {
+                if (fileOut != null) {
+                    fileOut.close();
+                }
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
 
     }
 
-    public static synchronized void updateMultipleTextStartIds(Map<Integer, Long> taskIdStartIdMap, String absolutFileName) throws FileNotFoundException, IOException {
+    public static synchronized void updateMultipleTextStartIds(Map<Integer, Long> taskIdStartIdMap, String absolutFileName) throws MyCustomException {
 
-        String input;
+        String input = "";
+        String errorDescription = "Error! Failed to add or update the text start Id in the file";
         try (BufferedReader file = new BufferedReader(new FileReader(absolutFileName))) {
             String line;
             input = "";
             while ((line = file.readLine()) != null) {
                 input += line + '\n';
             }
+        } catch (IOException ex) {
+            String errorDetails = "IO Error occurred while trying to update the text start Id in the file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
         }
-
-        logger.debug(input); // check that it's inputted right
 
         for (Map.Entry<Integer, Long> entry : taskIdStartIdMap.entrySet()) {
 
@@ -604,22 +749,73 @@ public class FileUtilities {
         logger.debug("----------------------------------" + '\n' + input);
 
         // write the new String with the replaced line OVER the same file
-        FileOutputStream fileOut = new FileOutputStream(absolutFileName);
-        fileOut.write(input.getBytes());
-        fileOut.close();
+        FileOutputStream fileOut = null;
+        try {
+            fileOut = new FileOutputStream(absolutFileName);
+            fileOut.write(input.getBytes());
+        } catch (FileNotFoundException ex) {
+
+            String errorDetails = "FileNotFoundException Error occurred while trying to update the text start Id in the file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.FILE_NOT_FOUND_ERR, errorDescription, errorDetails);
+            throw error;
+
+        } catch (IOException ex) {
+
+            String errorDetails = "IO Error occurred while trying to update the text start Id in the file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+            throw error;
+
+        } finally {
+            try {
+                if (fileOut != null) {
+                    fileOut.close();
+                }
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
 
     }
 
-    protected static int readToBuffer(RandomAccessFile fs, byte[] buffer, int offset, int read_size) throws IOException {
+    /**
+     * 
+     * @param fs
+     * @param buffer
+     * @param offset
+     * @param read_size
+     * @return
+     * @throws MyCustomException 
+     */
+    protected static int readToBuffer(RandomAccessFile fs, byte[] buffer, int offset, int read_size) throws MyCustomException {
+
+        String errorDescription = "Error! Failed to read buffer";
+
         if ((fs == null) || (buffer == null) || (read_size == 0) || (offset + read_size > buffer.length)) {
-            throw new IllegalArgumentException("invalid argument");
+            String errorDetails = "Invalid argument";
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.SERVER_ERR, errorDescription, errorDetails);
+            throw error;
         }
+        
         int dwLen = 0;
         int dwRead = 0;
         while (dwRead < read_size) {
-            dwLen = fs.read(buffer, offset + dwRead, read_size - dwRead);
+
+            try {
+
+                dwLen = fs.read(buffer, offset + dwRead, read_size - dwRead);
+
+            } catch (IOException ex) {
+
+                String errorDetails = "IO Error occurred while trying to update the text start Id in the file: " + ex.getMessage();
+                MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, errorDescription, errorDetails);
+                throw error;
+            }
             if (dwLen <= 0) {
-                throw new IOException("read file exception, file length is invalid");
+
+                String errorDetails = "File exception, File length is invalid";
+                MyCustomException error = GeneralUtils.getSingleError(ErrorCode.SERVER_ERR, errorDescription, errorDetails);
+                throw error;
+
             }
             dwRead += dwLen;
         }

@@ -13,7 +13,7 @@ import com.library.datamodel.model.v1_0.AdProgram;
 import com.library.datamodel.model.v1_0.AdResource;
 import com.library.datamodel.model.v1_0.AdSchedule;
 import com.library.datamodel.model.v1_0.AdScreen;
-import com.library.datamodel.model.v1_0.AdScreenArea;
+import com.library.datamodel.model.v1_0.AdArea;
 import com.library.datamodel.model.v1_0.AdScreenOwner;
 import com.library.datamodel.model.v1_0.AdTerminal;
 import com.library.datamodel.model.v1_0.AdText;
@@ -57,7 +57,7 @@ public final class DbUtils {
         switch (entity) {
 
             case AD_AREA:
-                entityType = AdScreenArea.class;
+                entityType = AdArea.class;
                 break;
 
             case AD_OWNER:

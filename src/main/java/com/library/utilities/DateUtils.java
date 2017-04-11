@@ -4,6 +4,7 @@ import com.library.datamodel.Constants.NamedConstants;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -81,8 +82,6 @@ public class DateUtils {
         DateTimeZone desiredTimeZone = DateTimeZone.forID(timeZoneStr);
         return LocalDateTime.now(desiredTimeZone);
     }
-
-  
 
     public static LocalDateTime getDateTimeNow() {
 
@@ -465,6 +464,21 @@ public class DateUtils {
 
         LocalTime localTime = new LocalTime(millisOfDay);
         return localTime.getHourOfDay();
+    }
+
+    /**
+     * Convert millis to Seconds of Day
+     *
+     * @param millis
+     * @return
+     */
+    public static int convertMillisToSeconds(long millis) {
+
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+        return (int) seconds;
+
+//        LocalTime localTime = new LocalTime(millis);
+//        return localTime.get(DateTimeFieldType.secondOfMinute());
     }
 
     /**

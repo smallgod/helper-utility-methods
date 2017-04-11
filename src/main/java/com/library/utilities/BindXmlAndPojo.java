@@ -4,6 +4,7 @@ package com.library.utilities;
 import com.advertexpo.addisplay.constants.ErrorCategory;
 import com.advertexpo.addisplay.constants.ErrorCode;
 import com.advertexpo.addisplay.exceptiontype.MyCustomExceptionOLD;*/
+import com.library.customexception.MyCustomException;
 import com.library.customexception.MyCustomExceptionOLD;
 import com.library.datamodel.Constants.ErrorCategory;
 import com.library.datamodel.Constants.ErrorCode;
@@ -26,10 +27,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import org.openide.util.Exceptions;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -66,15 +69,16 @@ public class BindXmlAndPojo {
     }
 
     /**
-     * 
+     *
      * @param xmlObject
      * @param classToBind
      * @return
-     * @throws JAXBException 
+     * @throws com.library.customexception.MyCustomException
      */
-    public static String objectToXML(Object xmlObject, Class... classToBind) throws JAXBException {
+    public static String objectToXML(Object xmlObject, Class... classToBind) throws MyCustomException {
 
         String xmlOutput = null;
+        String errorDescription = "Error! Failed to convert Object to XML";
 
         StringWriter sw = new StringWriter();
         PrintWriter printWriter = new PrintWriter(sw);
@@ -85,14 +89,30 @@ public class BindXmlAndPojo {
             }
         });
 
-        JAXBContext jc = JAXBContext.newInstance(classToBind);
-        Marshaller marshaller = jc.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8"); //NOI18N
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        //marshaller.setProperty(CharacterEscapeHandler.class.getName(), new XmlCharacterHandler());
-        //m.marshal( xmlObject, System.out );
+        JAXBContext jc;
+        Marshaller marshaller;
+        try {
 
-        marshaller.marshal(xmlObject, dataWriter);
+            jc = JAXBContext.newInstance(classToBind);
+            marshaller = jc.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8"); //NOI18N
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            //marshaller.setProperty(CharacterEscapeHandler.class.getName(), new XmlCharacterHandler());
+            //m.marshal( xmlObject, System.out );
+
+            marshaller.marshal(xmlObject, dataWriter);
+
+        } catch (PropertyException ex) {
+
+            String errorDetails = "PropertyException occurred while trying to marshal object: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, errorDescription, errorDetails);
+            throw error;
+
+        } catch (JAXBException ex) {
+            String errorDetails = "JAXBException occurred while trying to marshal object: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, errorDescription, errorDetails);
+            throw error;
+        }
 
         xmlOutput = sw.toString();
 
@@ -236,59 +256,81 @@ public class BindXmlAndPojo {
      * @param classToBind - corresponding java classs (JAXB) used for
      * marshalling/unmarshalling
      * @return
-     * @throws FileNotFoundException
-     * @throws UnsupportedEncodingException
-     * @throws SAXException
-     * @throws ValidationException
-     * @throws JAXBException
-     * @throws NullPointerException
+     * @throws com.library.customexception.MyCustomException
      */
-    public static <T> Object xmlFileToObject(String xmlFilePath, String xsdFilePath, Class<T> classToBind) throws FileNotFoundException, UnsupportedEncodingException, SAXException, ValidationException, JAXBException, NullPointerException {
+    public static <T> Object xmlFileToObject(String xmlFilePath, String xsdFilePath, Class<T> classToBind) throws MyCustomException {
 
         //if schema file loc is not known - http://docs.oracle.com/javase/6/docs/api/javax/xml/validation/SchemaFactory.html#newSchema%28%29
         //SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         //Schema schema = factory.newSchema();
         //Unmarshaller unmarshaller = jc.createUnmarshaller();
         //unmarshaller.setSchema(schema);
+        String errorDescription = "Error! Failed to convert xml file to object";
+
         File file = new File(xmlFilePath);
 
         if (file.exists()) {
             System.out.println("File exists here in xmlFileToObject");
         } else {
-            System.err.println("File DOESN'T exists here in xmlFileToObject");
+
+            String errorDetails = "File does not exist - " + xmlFilePath;
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, errorDescription, errorDetails);
+            throw error;
         }
 
-        InputStream inputStream = new FileInputStream(file);
-        Reader reader = new InputStreamReader(inputStream, "utf-8");
-        InputSource is = new InputSource(reader);
-        is.setEncoding("utf-8");
-
-        System.out.println("type of class to unmarshal to is: " + classToBind.getTypeName());
-
-        //validate the XML
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = sf.newSchema(new File(xsdFilePath));
-
-        JAXBContext jc = JAXBContext.newInstance(classToBind);
-        Unmarshaller unmarshaller = jc.createUnmarshaller();
-
-        unmarshaller.setSchema(schema);
-
-        unmarshaller.setEventHandler(new XMLValidationEventHandler());
-        //XMLObject xmlObject = (DBMSXMLObject) unmarshaller.unmarshal(new File(xmlFilePath)); 
-
-        Object xmlObject = null;
+        InputStream inputStream;
+        Reader reader;
         try {
+
+            inputStream = new FileInputStream(file);
+            reader = new InputStreamReader(inputStream, "utf-8");
+            InputSource is = new InputSource(reader);
+            is.setEncoding("utf-8");
+
+            //validate the XML
+            SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = sf.newSchema(new File(xsdFilePath));
+
+            JAXBContext jc = JAXBContext.newInstance(classToBind);
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            unmarshaller.setSchema(schema);
+            unmarshaller.setEventHandler(new XMLValidationEventHandler());
+            //XMLObject xmlObject = (DBMSXMLObject) unmarshaller.unmarshal(new File(xmlFilePath)); 
+            Object xmlObject = null;
             //xmlObject = unmarshaller.unmarshal(is);
             xmlObject = JAXBIntrospector.getValue(unmarshaller.unmarshal(is));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            System.err.println("ERROR: " + e.getMessage());
+            return xmlObject;
+
+        } catch (NullPointerException ex) {
+            String errorDetails = "NullPointerException occurred while trying to unmarshal file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, errorDescription, errorDetails);
+            throw error;
+        } catch (ValidationException ex) {
+            String errorDetails = "ValidationException occurred while trying to unmarshal file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, errorDescription, errorDetails);
+            throw error;
+        } catch (FileNotFoundException ex) {
+            String errorDetails = "FileNotFoundException occurred while trying to unmarshal file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, errorDescription, errorDetails);
+            throw error;
+        } catch (UnsupportedEncodingException ex) {
+            String errorDetails = "UnsupportedEncodingException occurred while trying to unmarshal file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, errorDescription, errorDetails);
+            throw error;
+        } catch (SAXException ex) {
+            String errorDetails = "SAXException occurred while trying to unmarshal file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, errorDescription, errorDetails);
+            throw error;
+        } catch (JAXBException ex) {
+            String errorDetails = "JAXBException occurred while trying to unmarshal file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, errorDescription, errorDetails);
+            throw error;
+        } catch (Exception ex) {
+            String errorDetails = "General Exception occurred while trying to unmarshal file: " + ex.getMessage();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, errorDescription, errorDetails);
+            throw error;
         }
 
-        System.out.println("DEBUG: Done unmarshalling, Object is: " + xmlObject.getClass().getTypeName() + "  !!!!!!!!");
-
-        return xmlObject;
     }
 
     public static <T> T xmlFileToObject1(String xmlFilePath, Class<T> classToBind) throws FileNotFoundException, UnsupportedEncodingException, JAXBException {
