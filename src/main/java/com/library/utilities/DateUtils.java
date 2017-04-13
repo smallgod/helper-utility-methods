@@ -1,6 +1,7 @@
 package com.library.utilities;
 
 import com.library.datamodel.Constants.NamedConstants;
+import java.time.DayOfWeek;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.joda.time.DateTime;
@@ -511,6 +512,17 @@ public class DateUtils {
         String formattedTime = DateTimeFormat.forPattern(timeFormat).print(localTime);
 
         return formattedTime;
+
+    }
+
+    /**
+     * Get day of the week as an integer. Note: 1 - Monday
+     * 
+     * @return 
+     */
+    public static int getDayOfWeekToday() {
+
+        return (getDateNow().getDayOfWeek());
 
     }
 
