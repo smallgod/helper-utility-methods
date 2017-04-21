@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -32,7 +31,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import org.openide.util.Exceptions;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -44,6 +42,7 @@ public class BindXmlAndPojo {
      * @param xmlObject
      * @param classToBind
      * @return
+     * @throws com.library.customexception.MyCustomExceptionOLD
      */
     public static String objectToXMLOLD(Object xmlObject, Class... classToBind) throws MyCustomExceptionOLD {
 

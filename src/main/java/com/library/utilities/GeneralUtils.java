@@ -39,10 +39,14 @@ import com.library.datamodel.model.v1_0.AdScreenOwner;
 import com.library.datamodel.model.v1_0.AdTerminal;
 import com.library.datamodel.model.v1_0.AdText;
 import com.library.datamodel.model.v1_0.AdAudienceType;
+import com.library.datamodel.model.v1_0.AdBusiness;
 import com.library.datamodel.model.v1_0.Author;
 import com.library.datamodel.model.v1_0.Book;
 import com.library.datamodel.model.v1_0.AdBusinessType;
+import com.library.datamodel.model.v1_0.AdProgramSlot;
 import com.library.datamodel.model.v1_0.AdTimeSlot;
+import com.library.datamodel.model.v1_0.AdUser;
+import com.library.datamodel.model.v1_0.BaseEntity;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -192,7 +196,7 @@ public class GeneralUtils {
                 }.getType();
                 break;
 
-            case LOCATION_TYPE:
+            case BUSINESS_TYPE:
                 singleCollectionType = new TypeToken<AdBusinessType>() {
                 }.getType();
                 entityCollectionType = new TypeToken<Set<AdBusinessType>>() {
@@ -237,6 +241,102 @@ public class GeneralUtils {
         }
 
         return singleCollectionType;
+    }
+
+    /**
+     *
+     * @param entityName
+     * @return
+     * @throws com.library.customexception.MyCustomException
+     */
+    public static Class getEntityClass(EntityName entityName) throws MyCustomException {
+
+        Class entityClass;
+
+        switch (entityName) {
+
+            case AD_PROGRAM:
+
+                entityClass = AdProgram.class;
+                break;
+
+            case AD_OWNER:
+
+                entityClass = AdScreenOwner.class;
+                break;
+
+            case AD_AREA:
+                entityClass = AdArea.class;
+                break;
+
+            case AD_RESOURCE:
+                entityClass = AdResource.class;
+                break;
+
+            case AD_PAYMENT:
+                entityClass = AdPayment.class;
+                break;
+
+            case AD_SCHEDULE:
+                entityClass = AdSchedule.class;
+                break;
+
+            case AD_SCREEN:
+                entityClass = AdScreen.class;
+                break;
+
+            case AD_SCREENOWNER:
+                entityClass = AdScreenOwner.class;
+                break;
+
+            case AD_CLIENT:
+                entityClass = AdClient.class;
+                break;
+
+            case AD_MONITOR:
+                entityClass = AdMonitor.class;
+                break;
+
+            case AD_TERMINAL:
+                entityClass = AdTerminal.class;
+                break;
+
+            case AUDIENCE_TYPE:
+                entityClass = AdAudienceType.class;
+                break;
+
+            case BUSINESS_TYPE:
+                entityClass = AdBusinessType.class;
+                break;
+
+            case TIME_SLOT:
+                entityClass = AdTimeSlot.class;
+                break;
+
+            case AD_TEXT:
+                entityClass = AdText.class;
+                break;
+
+            case AD_BUSINESS:
+                entityClass = AdBusiness.class;
+                break;
+
+            case AD_PROGRAM_TIME_SLOT:
+                entityClass = AdProgramSlot.class;
+                break;
+
+            case AD_USER:
+                entityClass = AdUser.class;
+                break;
+
+            default:
+
+                String errorDetails = "Can't get Entity Class, Unknown Entity: " + entityName + ", bad things bound to happen!!! ";
+                MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, NamedConstants.GENERIC_DB_ERR_DESC, errorDetails);
+                throw error;
+        }
+
+        return entityClass;
     }
 
     /**
@@ -470,6 +570,7 @@ public class GeneralUtils {
      * @param objectToConvert
      * @param objectType
      * @return
+     * @throws com.library.customexception.MyCustomException
      */
     public static <T> String convertToJson(Object objectToConvert, Type objectType) throws MyCustomException {
 
@@ -1104,6 +1205,17 @@ public class GeneralUtils {
     }
 
     /**
+     * Convert an Object to a double value
+     *
+     * @param value
+     * @return
+     */
+    public static int convertObjectToInteger(Object value) {
+        logger.debug("Converting Object to Integer");
+        return (value instanceof Number ? ((Number) value).intValue() : 0);
+    }
+
+    /**
      *
      * @param mapOfSchedulesAndProgIds
      * @return
@@ -1228,7 +1340,7 @@ public class GeneralUtils {
 
     /**
      * Generate OTP (4-digit PIN)
-     * 
+     *
      * @return
      */
     public static synchronized int generateOTP() {
@@ -1241,8 +1353,8 @@ public class GeneralUtils {
 
         return generatedOTP;
     }
-    
-        public static synchronized int generateInt() {
+
+    public static synchronized int generateInt() {
 
         int START = 1000;
         long END = 9999L;

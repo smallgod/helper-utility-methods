@@ -50,7 +50,7 @@ public final class DbUtils {
      * @param entity
      * @return
      */
-    public static Class getEntityClass(EntityName entity) {
+    public static Class getEntityClassDEPRECATED(EntityName entity) {
 
         Class entityType = null;
 
@@ -105,7 +105,7 @@ public final class DbUtils {
                 entityType = AdAudienceType.class;
                 break;
 
-            case LOCATION_TYPE:
+            case BUSINESS_TYPE:
                 entityType = AdBusinessType.class;
                 break;
 

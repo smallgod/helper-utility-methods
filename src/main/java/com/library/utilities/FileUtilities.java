@@ -23,9 +23,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.CRC32;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -714,7 +711,7 @@ public class FileUtilities {
                     fileOut.close();
                 }
             } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
+                ex.printStackTrace();
             }
         }
 
@@ -771,20 +768,20 @@ public class FileUtilities {
                     fileOut.close();
                 }
             } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
+                ex.printStackTrace();
             }
         }
 
     }
 
     /**
-     * 
+     *
      * @param fs
      * @param buffer
      * @param offset
      * @param read_size
      * @return
-     * @throws MyCustomException 
+     * @throws MyCustomException
      */
     protected static int readToBuffer(RandomAccessFile fs, byte[] buffer, int offset, int read_size) throws MyCustomException {
 
@@ -795,7 +792,7 @@ public class FileUtilities {
             MyCustomException error = GeneralUtils.getSingleError(ErrorCode.SERVER_ERR, errorDescription, errorDetails);
             throw error;
         }
-        
+
         int dwLen = 0;
         int dwRead = 0;
         while (dwRead < read_size) {
@@ -823,161 +820,4 @@ public class FileUtilities {
         return dwRead;
     }
 
-    /**
-     *
-     * @param workBook
-     * @param sheetIndex
-     * @return
-     */
-    public static Sheet getSheetAtIndex(Workbook workBook, int sheetIndex) {
-
-        int numberOfSheets = workBook.getNumberOfSheets();
-        //first sheet from workbook
-        Sheet sheet = workBook.getSheetAt(sheetIndex);
-
-        return sheet;
-    }
-
-    /**
-     *
-     * @param sheet
-     * @return
-     * @throws MyCustomException
-     */
-//    public static int getNumRecordsMinusHeaders(Sheet sheet) throws MyCustomExceptionOLD {
-//
-//        int noOfPhysicalRows = sheet.getPhysicalNumberOfRows() - 1; //minus HeaderNames row
-//        if (noOfPhysicalRows < 1) {
-//
-//            logger.error("Excel sheet is empty");
-//            throw new MyCustomExceptionOLD("Uploaded file empty", ErrorCode.CLIENT_ERR, "Uploaded file must contain atleast one row of data", ErrorCategory.CLIENT_ERR_TYPE);
-//        }
-//
-//        return noOfPhysicalRows;
-//    }
-    /**
-     * *
-     * @param sheet
-     * @return Iterator
-     * @throws MyCustomException
-     */
-//    public static Iterator<Row> getWorkBookRowIteratorHelper(Sheet sheet) throws MyCustomExceptionOLD {
-//
-//        Iterator<Row> rowIterator = sheet.iterator();
-//
-//        return rowIterator;
-//    }
-    /**
-     * Count the number of lines in a file
-     *
-     * @param fileName
-     * @return
-     * @throws MyCustomException
-     */
-//    public static int countNoOfLinesInFile1(String fileName) throws MyCustomExceptionOLD {
-//
-//        LineNumberReader lineNumberReader = null;
-//        int lineCount = 0;
-//
-//        try {
-//
-//            File file = new File(fileName);
-//            lineNumberReader = new LineNumberReader(new FileReader(file));
-//            lineNumberReader.skip(Long.MAX_VALUE);
-//            lineCount = lineNumberReader.getLineNumber();
-//
-//        } catch (FileNotFoundException ex) {
-//            throw new MyCustomExceptionOLD("FileNotFound Error", ErrorCode.INTERNAL_ERR, "File NOT found: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
-//
-//        } catch (IOException ex) {
-//            throw new MyCustomExceptionOLD("IO Error", ErrorCode.COMMUNICATION_ERR, "IO error: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
-//
-//        } finally {
-//
-//            try {
-//                if (lineNumberReader != null) {
-//                    lineNumberReader.close();
-//                }
-//            } catch (IOException ex) {
-//                logger.error("Error while closing LineNumberReader stream: " + ex.getMessage());
-//            }
-//        }
-//
-//        return lineCount;
-//
-//    }
-    /**
-     * Counts number of lines in file (**NOT cross-platform)
-     *
-     * @param fileName
-     * @return
-     * @throws MyCustomException
-     */
-//    public final static int countNoOfLinesInFile2(String fileName) throws MyCustomExceptionOLD {
-//
-//        int lineCount = -1;
-//
-//        try {
-//
-//            ProcessBuilder builder = new ProcessBuilder("wc", "-l", fileName);
-//            Process process = builder.start();
-//
-//            InputStream in = process.getInputStream();
-//            LineNumberReader reader = new LineNumberReader(new InputStreamReader(in));
-//            String line = reader.readLine();
-//
-//            if (line != null) {
-//
-//                lineCount = Integer.parseInt(line.trim().split(" ")[0]);
-//            }
-//
-//        } catch (IOException ex) {
-//            throw new MyCustomExceptionOLD("IO Error", ErrorCode.COMMUNICATION_ERR, "IO error: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
-//
-//        }
-//        return lineCount;
-//    }
-    /**
-     * Count the number of lines (3* faster)
-     *
-     * @param fileName
-     * @return
-     * @throws com.namaraka.recon.exceptiontype.MyCustomException
-     */
-//    public static int countNoOfLinesInFile(String fileName) throws MyCustomExceptionOLD {
-//
-//        FileInputStream fis = null;
-//        int lineCount = -1;
-//
-//        try {
-//
-//            fis = new FileInputStream(new File(fileName));
-//            byte[] buffer = new byte[BUFFER_SIZE]; // BUFFER_SIZE = 8 * 1024
-//
-//            int read;
-//            while ((read = fis.read(buffer)) != -1) {
-//                for (int i = 0; i < read; i++) {
-//                    if (buffer[i] == '\n') {
-//                        lineCount++;
-//                    }
-//                }
-//            }
-//
-//        } catch (FileNotFoundException ex) {
-//            throw new MyCustomExceptionOLD("FileNotFound Error", ErrorCode.INTERNAL_ERR, "File NOT found: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
-//
-//        } catch (IOException ex) {
-//            throw new MyCustomExceptionOLD("IO Error", ErrorCode.COMMUNICATION_ERR, "IO error: " + ex.getMessage(), ErrorCategory.SERVER_ERR_TYPE);
-//
-//        } finally {
-//            try {
-//                if (fis != null) {
-//                    fis.close();
-//                }
-//            } catch (IOException ex) {
-//                logger.error("Error while closing FileInputStream stream: " + ex.getMessage());
-//            }
-//        }
-//        return lineCount;
-//    }
 }
