@@ -6,8 +6,8 @@
 package com.library.utilities;
 
 import com.library.customexception.MyCustomException;
-import com.library.customexception.MyCustomExceptionOLD;
 import com.library.datamodel.Constants.ErrorCode;
+import com.library.sglogger.util.LoggerUtil;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;

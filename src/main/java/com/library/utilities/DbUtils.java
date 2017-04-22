@@ -22,6 +22,7 @@ import com.library.datamodel.model.v1_0.Author;
 import com.library.datamodel.model.v1_0.Book;
 import com.library.datamodel.model.v1_0.AdBusinessType;
 import com.library.datamodel.model.v1_0.AdTimeSlot;
+import com.library.sglogger.util.LoggerUtil;
 import java.util.Date;
 
 public final class DbUtils {

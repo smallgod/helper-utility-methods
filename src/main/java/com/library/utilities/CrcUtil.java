@@ -5,9 +5,9 @@
  */
 package com.library.utilities;
 
+import com.library.sglogger.util.LoggerUtil;
 import java.io.UnsupportedEncodingException;
 import java.util.zip.CRC32;
-import org.apache.commons.lang.StringEscapeUtils;
 
 public class CrcUtil {
 

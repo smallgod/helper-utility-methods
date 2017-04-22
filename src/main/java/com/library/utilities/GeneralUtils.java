@@ -47,6 +47,7 @@ import com.library.datamodel.model.v1_0.AdProgramSlot;
 import com.library.datamodel.model.v1_0.AdTimeSlot;
 import com.library.datamodel.model.v1_0.AdUser;
 import com.library.datamodel.model.v1_0.BaseEntity;
+import com.library.sglogger.util.LoggerUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;

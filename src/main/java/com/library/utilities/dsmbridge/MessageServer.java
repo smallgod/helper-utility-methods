@@ -1,11 +1,10 @@
 package com.library.utilities.dsmbridge;
 
-import com.library.utilities.LoggerUtil;
+import com.library.sglogger.util.LoggerUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.util.Date;

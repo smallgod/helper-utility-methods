@@ -2,6 +2,7 @@ package com.library.utilities;
 
 import com.library.customexception.MyCustomException;
 import com.library.datamodel.Constants.ErrorCode;
+import com.library.sglogger.util.LoggerUtil;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

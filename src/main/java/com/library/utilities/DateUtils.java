@@ -1,11 +1,10 @@
 package com.library.utilities;
 
 import com.library.datamodel.Constants.NamedConstants;
-import java.time.DayOfWeek;
+import com.library.sglogger.util.LoggerUtil;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
