@@ -227,6 +227,11 @@ public class MessageServer {
         return true;
     }
 
+    /**
+     * 
+     * @param task_id
+     * @return 
+     */
     public boolean demandTaskChanged(int task_id) {
         if (task_id == 0) {
             throw new IllegalArgumentException("invalid demand task id");
