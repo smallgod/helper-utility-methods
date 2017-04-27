@@ -93,7 +93,6 @@ public class FileUtilities {
      * @param fileName
      * @return
      * @throws NullPointerException
-     * @throws com.namaraka.recon.exceptiontype.MyCustomException
      */
     public static String getFileExtension(String fileName) {
 

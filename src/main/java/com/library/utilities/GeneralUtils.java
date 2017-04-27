@@ -1558,4 +1558,34 @@ public class GeneralUtils {
         return set;
 
     }
+
+    /**
+     * Get Resource unique id from fullUploadName
+     *
+     * @param fullUploadName
+     * @return
+     */
+    public static String getResourceUploadIdHelperNOTUSED(String fullUploadName) {
+
+        String[] stripString = fullUploadName.split("_", 2);//1486059288818_hotel(4).jpg
+        String resourceName = stripString[stripString.length - 1];
+        String uploadId = stripString[0];
+
+        return uploadId;
+    }
+
+    /**
+     * Get Resource Name from fullUploadName
+     *
+     * @param fullUploadName
+     * @return
+     */
+    public static String getResourceNameHelperNOTUSED(String fullUploadName) {
+
+        String[] stripString = fullUploadName.split("_", 2);//1486059288818_hotel(4).jpg
+        String resourceName = stripString[stripString.length - 1];
+        String uploadId = stripString[0];
+
+        return resourceName;
+    }
 }
