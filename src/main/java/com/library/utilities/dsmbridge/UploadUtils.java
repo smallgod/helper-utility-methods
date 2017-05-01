@@ -21,6 +21,9 @@ public final class UploadUtils {
 
     public static int getFileType(String fileName) {
         try {
+            
+           System.out.println("File Name: " + fileName);
+           
             String extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
             
             if (IMAGE_FILE_EXT_NAMES.contains(extension)) {

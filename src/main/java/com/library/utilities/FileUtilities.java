@@ -8,6 +8,8 @@ package com.library.utilities;
 import com.library.customexception.MyCustomException;
 import com.library.datamodel.Constants.ErrorCode;
 import com.library.sglogger.util.LoggerUtil;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -505,21 +507,31 @@ public class FileUtilities {
         return file.exists();
     }
 
-    public static boolean moveFile(String src, String dest) {
+    /**
+     *
+     * @param srcFilePath
+     * @param destFilePath
+     * @return
+     * @throws SecurityException
+     */
+    public static boolean moveFile(String srcFilePath, String destFilePath) throws SecurityException {
 
-        logger.debug("Renaming file: " + src + ", to: " + dest);
+        logger.debug("Renaming file: " + srcFilePath + ", to: " + destFilePath);
 
-        File file_src = new File(src);
-        File file_dest = new File(dest);
+        File sourceFile = new File(srcFilePath);
+        File destFile = new File(destFilePath);
 
-        if (!file_src.exists()) {
-            throw new IllegalArgumentException("cannot find source file: " + src);
+        if (!sourceFile.exists()) {
+            throw new IllegalArgumentException("cannot find source file: " + srcFilePath);
         }
-        if (file_dest.exists()) {
-            throw new IllegalStateException("exited destination file: " + dest);
+
+        if (destFile.exists()) {
+            throw new IllegalStateException("exited destination file: " + destFilePath);
         }
-        file_dest.getParentFile().mkdirs();
-        return file_src.renameTo(file_dest);
+
+        destFile.getParentFile().mkdirs();
+
+        return sourceFile.renameTo(destFile);
     }
 
     public static boolean deleteFile(String path) {
@@ -817,6 +829,33 @@ public class FileUtilities {
         }
 
         return dwRead;
+    }
+
+    /**
+     * Get unique upload file name generated from timenow in millis
+     *
+     * @param fileExt
+     * @return
+     */
+    public static String getFileUploadUniqueName(String fileExt) {
+
+        return (String.valueOf(DateUtils.getTimeNowInLong()) + "." + fileExt);
+
+    }
+
+    /**
+     * Convert png image to jpeg
+     *
+     * @param inputImage
+     * @return
+     */
+    public static BufferedImage convertPNGtoJPG(BufferedImage inputImage) {
+
+        BufferedImage outputImage = new BufferedImage(inputImage.getWidth(), inputImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+        outputImage.createGraphics().drawImage(outputImage, 0, 0, Color.WHITE, null);
+
+        return outputImage;
+
     }
 
 }
