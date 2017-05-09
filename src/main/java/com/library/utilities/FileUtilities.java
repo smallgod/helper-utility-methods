@@ -7,6 +7,7 @@ package com.library.utilities;
 
 import com.library.customexception.MyCustomException;
 import com.library.datamodel.Constants.ErrorCode;
+import com.library.datamodel.Constants.NamedConstants;
 import com.library.sglogger.util.LoggerUtil;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -194,6 +195,13 @@ public class FileUtilities {
         }
     }
 
+    /**
+     *
+     * @param source
+     * @param dest
+     * @return
+     * @throws MyCustomException
+     */
     public static boolean copyFile(String source, String dest) throws MyCustomException {
 
         FileChannel sourceChannel = null;
@@ -280,6 +288,61 @@ public class FileUtilities {
             } catch (IOException ex) {
                 logger.error("IOException occurred while closing openned File Streams: " + ex.getMessage());
             }
+        }
+    }
+
+    public static void copyEntireFolderNEEDSAPACHE(File sourceDir, File destDir) {
+
+//        try {
+//            FileUtils.copyDirectory(sourceDir, destDir);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    /**
+     * This function recursively copy all the sub folder and files from
+     * sourceFolder to destinationFolder
+     *
+     * @param sourceFolder
+     * @param destinationFolder
+     * @throws com.library.customexception.MyCustomException
+     */
+    public static void copyFolder(File sourceFolder, File destinationFolder) throws MyCustomException {
+
+        try {
+
+            //Check if sourceFolder is a directory or file
+            //If sourceFolder is file; then copy the file directly to new location
+            if (sourceFolder.isDirectory()) {
+                //Verify if destinationFolder is already present; If not then create it
+                if (!destinationFolder.exists()) {
+                    destinationFolder.mkdir();
+                    logger.debug("Directory created :: " + destinationFolder);
+                }
+
+                //Get all files from source directory
+                String files[] = sourceFolder.list();
+
+                //Iterate over all files and copy them to destinationFolder one by one
+                for (String file : files) {
+                    File srcFile = new File(sourceFolder, file);
+                    File destFile = new File(destinationFolder, file);
+
+                    //Recursive function call
+                    copyFolder(srcFile, destFile);
+                }
+            } else {
+                //Copy the file content from one place to another 
+                Files.copy(sourceFolder.toPath(), destinationFolder.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                logger.debug("File copied :: " + destinationFolder);
+            }
+
+        } catch (IOException ioe) {
+
+            String errorDetails = "IO Error occurred while copying folder: " + ioe.toString();
+            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.COMMUNICATION_ERR, NamedConstants.GENERIC_DB_ERR_DESC, errorDetails);
+            throw error;
         }
     }
 
@@ -515,8 +578,6 @@ public class FileUtilities {
      * @throws SecurityException
      */
     public static boolean moveFile(String srcFilePath, String destFilePath) throws SecurityException {
-
-        logger.debug("Renaming file: " + srcFilePath + ", to: " + destFilePath);
 
         File sourceFile = new File(srcFilePath);
         File destFile = new File(destFilePath);

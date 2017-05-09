@@ -531,6 +531,7 @@ public class GeneralUtils {
      * @param objectToConvert
      * @param objectType
      * @return
+     * @throws com.library.customexception.MyCustomException
      */
     public static <T> String convertToJson(Object objectToConvert, Class<T> objectType) throws MyCustomException {
 
@@ -545,6 +546,7 @@ public class GeneralUtils {
             graphAdapterBuilder
                     .addType(Author.class)
                     .addType(AdScreenOwner.class)
+                    //.addType(AdResource.class)
                     //.addType(AdProgram.class)
                     .registerOn(gsonBuilder);
             gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
