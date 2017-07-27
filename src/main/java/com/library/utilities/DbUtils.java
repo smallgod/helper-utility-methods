@@ -8,7 +8,7 @@ package com.library.utilities;
 import com.library.datamodel.Constants.EntityName;
 import com.library.datamodel.model.v1_0.AdClient;
 import com.library.datamodel.model.v1_0.AdMonitor;
-import com.library.datamodel.model.v1_0.AdPayment;
+import com.library.datamodel.model.v1_0.AdPaymentDetails;
 import com.library.datamodel.model.v1_0.AdProgram;
 import com.library.datamodel.model.v1_0.AdResource;
 import com.library.datamodel.model.v1_0.AdSchedule;
@@ -66,7 +66,7 @@ public final class DbUtils {
                 break;
 
             case AD_PAYMENT:
-                entityType = AdPayment.class;
+                entityType = AdPaymentDetails.class;
                 break;
 
             case AD_PROGRAM:

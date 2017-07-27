@@ -29,7 +29,7 @@ import com.library.datamodel.jaxb.config.v1_0.LayoutContentType;
 import com.library.datamodel.model.v1_0.AdAPIRequest;
 import com.library.datamodel.model.v1_0.AdClient;
 import com.library.datamodel.model.v1_0.AdMonitor;
-import com.library.datamodel.model.v1_0.AdPayment;
+import com.library.datamodel.model.v1_0.AdPaymentDetails;
 import com.library.datamodel.model.v1_0.AdProgram;
 import com.library.datamodel.model.v1_0.AdResource;
 import com.library.datamodel.model.v1_0.AdSchedule;
@@ -142,9 +142,9 @@ public class GeneralUtils {
                 break;
 
             case AD_PAYMENT:
-                singleCollectionType = new TypeToken<AdPayment>() {
+                singleCollectionType = new TypeToken<AdPaymentDetails>() {
                 }.getType();
-                entityCollectionType = new TypeToken<Set<AdPayment>>() {
+                entityCollectionType = new TypeToken<Set<AdPaymentDetails>>() {
                 }.getType();
                 break;
 
@@ -275,7 +275,7 @@ public class GeneralUtils {
                 break;
 
             case AD_PAYMENT:
-                entityClass = AdPayment.class;
+                entityClass = AdPaymentDetails.class;
                 break;
 
             case AD_SCHEDULE:
@@ -1441,6 +1441,10 @@ public class GeneralUtils {
 
         return message;
     }
+
+
+    
+
 
     /**
      *
