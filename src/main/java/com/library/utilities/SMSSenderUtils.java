@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.library.utilities;
 
 import com.library.customexception.MyCustomException;
@@ -23,47 +18,19 @@ public class SMSSenderUtils {
     private static final LoggerUtil logger = new LoggerUtil(SMSSenderUtils.class);
 
     /**
-     * Send a text message to the avertXpo admin alerting them of this new
-     * campaign created
+     * create new campaign message to alert advertXpo admin Send a text message
+     * to the avertXpo admin alerting them of this new campaign created
      *
      * @param createTime
      * @param campaignCost
      * @param momoAccount
-     * @param recipientNumber
+     * @param recipientAccount
      * @param clientPool
      * @return
-     * @throws MyCustomException
+     * @throws com.library.customexception.MyCustomException
      */
-    public static String generateAndSendNewCampaignMsg(String createTime, int campaignCost, String momoAccount, String recipientNumber, final HttpClientPool clientPool) throws MyCustomException {
+    public static String generateAndSendNewCampaignMsg(String createTime, int campaignCost, String momoAccount, String recipientAccount, final HttpClientPool clientPool) throws MyCustomException {
 
-        String smsText = getNewCampaignAdminMessage(createTime, campaignCost, momoAccount);
-
-        logger.debug("###### Message to client: " + smsText + " #######");
-
-        Map<String, Object> paramPairs = GeneralUtils.prepareTextMsgParams(smsText, recipientNumber);
-
-        //for now use hardcoded stuff in constants, but we have an externalunits entry in the xml that we can use for SMS server
-        //configs and mobile money configs as well
-        //String smsSendResponse = GeneralUtils.sendSMS(paramPairs);
-        String smsSendResponse = clientPool.sendRemoteRequest("", NamedConstants.SMS_API_URL, paramPairs, HTTPMethod.GET);
-
-        logger.info("Response from SMS web API Server: " + smsSendResponse);
-
-        return smsSendResponse;
-
-    }
-
-    /**
-     * create new campaign message to alert advertXpo admin
-     *
-     * @param createTime
-     * @param campaignCost
-     * @param momoAccount
-     * @return
-     */
-    public static String getNewCampaignAdminMessage(String createTime, int campaignCost, String momoAccount) {
-
-        //Object[] params = {"nameRobert", "rhume55@gmail.com"};
         Map<String, String> map = new HashMap<>();
 
         map.put("createTime", createTime);
@@ -73,37 +40,9 @@ public class SMSSenderUtils {
         String message = MapFormat.format(NamedConstants.SMS_TEMPLATE_NEW_CAMPAIGN_ADMIN, map);
         logger.debug("message : " + message);
 
+        sendSMS(message, recipientAccount, clientPool);
+
         return message;
-    }
-
-    /**
-     * Send a text message to the avertXpo admin alerting them of this campaign
-     * escalation
-     *
-     * @param id
-     * @param momoAccount
-     * @param recipientNumber
-     * @param clientPool
-     * @return
-     * @throws MyCustomException
-     */
-    public static String generateAndSendCampaignEscalateMsg(int id, String momoAccount, String recipientNumber, final HttpClientPool clientPool) throws MyCustomException {
-
-        String smsText = getCampaignEscalateAdminMessage(id, momoAccount);
-
-        logger.debug("###### Message to client: " + smsText + " #######");
-
-        Map<String, Object> paramPairs = GeneralUtils.prepareTextMsgParams(smsText, recipientNumber);
-
-        //for now use hardcoded stuff in constants, but we have an externalunits entry in the xml that we can use for SMS server
-        //configs and mobile money configs as well
-        //String smsSendResponse = GeneralUtils.sendSMS(paramPairs);
-        String smsSendResponse = clientPool.sendRemoteRequest("", NamedConstants.SMS_API_URL, paramPairs, HTTPMethod.GET);
-
-        logger.info("Response from SMS web API Server: " + smsSendResponse);
-
-        return smsSendResponse;
-
     }
 
     /**
@@ -111,9 +50,11 @@ public class SMSSenderUtils {
      *
      * @param id
      * @param momoAccount
+     * @param recipientAccount
+     * @param clientPool
      * @return
      */
-    public static String getCampaignEscalateAdminMessage(int id, String momoAccount) {
+    public static String generateAndSendCampaignEscalateMsg(int id, String momoAccount, String recipientAccount, final HttpClientPool clientPool) throws MyCustomException {
 
         //Object[] params = {"nameRobert", "rhume55@gmail.com"};
         Map<String, String> map = new HashMap<>();
@@ -124,47 +65,22 @@ public class SMSSenderUtils {
         String message = MapFormat.format(NamedConstants.SMS_TEMPLATE_CAMPAIGN_ESCALATE_ADMIN, map);
         logger.debug("message : " + message);
 
+        sendSMS(message, recipientAccount, clientPool);
+
         return message;
     }
 
     /**
-     * Send a text message to the avertXpo admin alerting them of campaign that
-     * needs review
+     * * Send a text message to the avertXpo admin alerting them of campaign
+     * that needs review Create SMS to send to admin for review of campaign
      *
      * @param id
      * @param momoAccount
-     * @param recipientNumber
+     * @param recipientAccount
      * @param clientPool
      * @return
-     * @throws MyCustomException
      */
-    public static String generateAndSendCampaignReviewAdminMsg(int id, String momoAccount, String recipientNumber, final HttpClientPool clientPool) throws MyCustomException {
-
-        String smsText = getCampaignReviewAdminMessage(id, momoAccount);
-
-        logger.debug("###### Message to client: " + smsText + " #######");
-
-        Map<String, Object> paramPairs = GeneralUtils.prepareTextMsgParams(smsText, recipientNumber);
-
-        //for now use hardcoded stuff in constants, but we have an externalunits entry in the xml that we can use for SMS server
-        //configs and mobile money configs as well
-        //String smsSendResponse = GeneralUtils.sendSMS(paramPairs);
-        String smsSendResponse = clientPool.sendRemoteRequest("", NamedConstants.SMS_API_URL, paramPairs, HTTPMethod.GET);
-
-        logger.info("Response from SMS web API Server: " + smsSendResponse);
-
-        return smsSendResponse;
-
-    }
-
-    /**
-     * Create SMS to send to admin for review of campaign
-     *
-     * @param id
-     * @param momoAccount
-     * @return
-     */
-    public static String getCampaignReviewAdminMessage(int id, String momoAccount) {
+    public static String generateAndSendCampaignReviewAdminMsg(int id, String momoAccount, String recipientAccount, final HttpClientPool clientPool) throws MyCustomException {
 
         //Object[] params = {"nameRobert", "rhume55@gmail.com"};
         Map<String, String> map = new HashMap<>();
@@ -175,7 +91,32 @@ public class SMSSenderUtils {
         String message = MapFormat.format(NamedConstants.SMS_TEMPLATE_CAMPAIGN_REVIEW_ADMIN, map);
         logger.debug("message : " + message);
 
+        sendSMS(message, recipientAccount, clientPool);
+
         return message;
     }
 
+    /**
+     *
+     * @param smsText
+     * @param recipientNumber
+     * @param clientPool
+     * @return
+     * @throws MyCustomException
+     */
+    public static String sendSMS(String smsText, String recipientNumber, final HttpClientPool clientPool) throws MyCustomException {
+
+        logger.debug("###### Sending Message: " + smsText + " #######");
+
+        Map<String, Object> paramPairs = GeneralUtils.prepareTextMsgParams(smsText, recipientNumber);
+
+        //for now use hardcoded stuff in constants, but we have an externalunits entry in the xml that we can use for SMS server
+        //configs and mobile money configs as well
+        //String smsSendResponse = GeneralUtils.sendSMS(paramPairs);
+        //String smsSendResponse = clientPool.sendRemoteRequest("", NamedConstants.SMS_API_URL, paramPairs, HTTPMethod.GET);
+        String smsSendResponse = "";
+        logger.info("Response from SMS web API Server: " + smsSendResponse);
+
+        return smsSendResponse;
+    }
 }

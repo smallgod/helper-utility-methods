@@ -132,7 +132,6 @@ public class GeneralUtils {
                 entityCollectionType = new TypeToken<Set<AdArea>>() {
                 }.getType();
                 break;
-            //775930087            //775930087
 
             case AD_RESOURCE:
                 singleCollectionType = new TypeToken<AdResource>() {
@@ -787,7 +786,7 @@ public class GeneralUtils {
         long longValue = ByteBuffer.wrap(uuid.toString().getBytes()).getLong();
         String randomValue = Long.toString(longValue, Character.MAX_RADIX);
 
-        return randomValue;
+        return randomValue.toUpperCase();
     }
 
     /**
@@ -800,7 +799,7 @@ public class GeneralUtils {
 
         String randomString = RandomStringUtils.randomAlphanumeric(stringLength).toUpperCase();
 
-        return randomString;
+        return randomString.toUpperCase();
     }
 
     /**
