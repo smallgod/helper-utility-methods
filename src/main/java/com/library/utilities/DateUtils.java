@@ -180,6 +180,23 @@ public class DateUtils {
     }
 
     /**
+     * Check if given Date is in the future
+     *
+     * @param dateToCheck
+     * @return true if given date is in the future else false
+     *
+     */
+    public static boolean isDateInTheFuture(LocalDate dateToCheck) {
+
+        LocalDate dateNow = DateUtils.getDateNow();
+
+        boolean isDateInThePast = dateToCheck.isAfter(dateNow);
+
+        return isDateInThePast;
+
+    }
+
+    /**
      * parse dateTime in a formatted string - e.g. Kampala timezone is -
      * "Africa/Kampala" and a string-format can be "ddMMyyyyHHmmss"
      *
@@ -516,8 +533,8 @@ public class DateUtils {
 
     /**
      * Get day of the week as an integer. Note: 1 - Monday
-     * 
-     * @return 
+     *
+     * @return
      */
     public static int getDayOfWeekToday() {
 
