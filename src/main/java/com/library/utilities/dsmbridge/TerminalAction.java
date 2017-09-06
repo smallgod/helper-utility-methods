@@ -10,6 +10,7 @@ import com.library.datamodel.Constants.NamedConstants;
 import com.library.datamodel.Constants.TaskType;
 import com.library.datamodel.dsm_bridge.TbTerminal;
 import com.library.hibernate.CustomHibernate;
+import javax.servlet.ServletResponse;
 
 /**
  *
@@ -36,19 +37,21 @@ public class TerminalAction {
 
     /**
      * Wakeup a terminal device
-     * 
+     *
      * @param customHibernate
      * @param terminalDeviceId
-     * @throws MyCustomException 
+     * @throws MyCustomException
      */
-    public void wakeup(CustomHibernate customHibernate, long terminalDeviceId) throws MyCustomException {
+    public static void wakeup(CustomHibernate customHibernate, long terminalDeviceId) throws MyCustomException {
+
+        System.out.println("Sending a WAKE-UP alert to the Terminal Device");
 
         String updateSql = "UPDATE tb_terminal SET STANDBY_SCHEDULE=''" + " WHERE CSTM_ID=" + NamedConstants.CUSTOMER_ID + " AND DEV_ID =" + terminalDeviceId;
         customHibernate.updateTerminalEntity(updateSql);
 
         final MessageServer messageServer = new MessageServer();
 
-        messageServer.noticeAssignChanged(terminalDeviceId);
+        System.out.println("Wake-up alert sent? - " + messageServer.noticeAssignChanged(terminalDeviceId));
         //LogHelp.userEvent(this.cstmId, this.userName, this.getText("terminalmonitor"), "[" + this.terminal.getDeviceName() + "]" + "WakeUp");
 
     }

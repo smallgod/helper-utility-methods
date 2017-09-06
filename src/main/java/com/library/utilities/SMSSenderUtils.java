@@ -113,8 +113,8 @@ public class SMSSenderUtils {
         //for now use hardcoded stuff in constants, but we have an externalunits entry in the xml that we can use for SMS server
         //configs and mobile money configs as well
         //String smsSendResponse = GeneralUtils.sendSMS(paramPairs);
-        //String smsSendResponse = clientPool.sendRemoteRequest("", NamedConstants.SMS_API_URL, paramPairs, HTTPMethod.GET);
-        String smsSendResponse = "";
+        String smsSendResponse = clientPool.sendRemoteRequest("", NamedConstants.SMS_API_URL, paramPairs, HTTPMethod.GET);
+        //String smsSendResponse = "";
         logger.info("Response from SMS web API Server: " + smsSendResponse);
 
         return smsSendResponse;

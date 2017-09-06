@@ -46,7 +46,7 @@ public class MessageServer {
         return true;
     }
 
-    protected static String serverAddr = "localhost";
+    protected static String serverAddr = "127.0.0.1";
     protected static int serverPort = 9091;
 
     protected static String logDirectory = getDefaultLogDirectory();
@@ -136,6 +136,7 @@ public class MessageServer {
         if (buf == null) {
             throw new IllegalArgumentException("[FillInt64DeviceId]invalid buffer");
         }
+        
         if ((pos < 0) || (pos + 8 > buf.length)) {
             throw new IllegalArgumentException("[FillInt64DeviceId]invalid pos");
         }

@@ -186,11 +186,22 @@ public class DateUtils {
      * @return true if given date is in the future else false
      *
      */
-    public static boolean isDateInTheFuture(LocalDate dateToCheck) {
+    public static boolean isDateInTheFuturew(LocalDate dateToCheck) {
 
         LocalDate dateNow = DateUtils.getDateNow();
 
-        boolean isDateInThePast = dateToCheck.isAfter(dateNow);
+        boolean isDateInTheFuture = dateToCheck.isAfter(dateNow);
+
+        return isDateInTheFuture;
+
+    }
+    
+    
+    public static boolean isDateInThePast(LocalDate dateToCheck) {
+
+        LocalDate dateNow = DateUtils.getDateNow();
+
+        boolean isDateInThePast = dateToCheck.isBefore(dateNow);
 
         return isDateInThePast;
 
