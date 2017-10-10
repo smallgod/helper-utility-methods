@@ -45,6 +45,21 @@ public class SMSSenderUtils {
         return message;
     }
 
+    public static String generateAndSendContacUsRequestMsg(String phoneContact, String messageExcerpt, String recipientAccount, final HttpClientPool clientPool) throws MyCustomException {
+
+        Map<String, String> map = new HashMap<>();
+
+        map.put("phoneContact", phoneContact);
+        map.put("messageExcerpt", "" + messageExcerpt);
+
+        String message = MapFormat.format(NamedConstants.SMS_TEMPLATE_CONTACT_US_REQ_ADMIN, map);
+        logger.debug("message : " + message);
+
+        sendSMS(message, recipientAccount, clientPool);
+
+        return message;
+    }
+
     /**
      * Create SMS to send to admin upon escalation of campaign
      *

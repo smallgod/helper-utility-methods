@@ -34,19 +34,20 @@ import com.library.datamodel.model.v1_0.AdProgram;
 import com.library.datamodel.model.v1_0.AdResource;
 import com.library.datamodel.model.v1_0.AdSchedule;
 import com.library.datamodel.model.v1_0.AdScreen;
-import com.library.datamodel.model.v1_0.AdArea;
-import com.library.datamodel.model.v1_0.AdScreenOwner;
 import com.library.datamodel.model.v1_0.AdTerminal;
 import com.library.datamodel.model.v1_0.AdText;
 import com.library.datamodel.model.v1_0.AdAudienceType;
+import com.library.datamodel.model.v1_0.AdAudienceXtics;
 import com.library.datamodel.model.v1_0.AdBusiness;
+import com.library.datamodel.model.v1_0.AdBusinessHours;
 import com.library.datamodel.model.v1_0.Author;
 import com.library.datamodel.model.v1_0.Book;
-import com.library.datamodel.model.v1_0.AdBusinessType;
+import com.library.datamodel.model.v1_0.AdBusinessService;
 import com.library.datamodel.model.v1_0.AdProgramSlot;
+import com.library.datamodel.model.v1_0.AdScreenSize;
+import com.library.datamodel.model.v1_0.AdSeyeyaWallet;
 import com.library.datamodel.model.v1_0.AdTimeSlot;
 import com.library.datamodel.model.v1_0.AdUser;
-import com.library.datamodel.model.v1_0.BaseEntity;
 import com.library.sglogger.util.LoggerUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -118,18 +119,25 @@ public class GeneralUtils {
 
                 break;
 
-            case AD_OWNER:
-                singleCollectionType = new TypeToken<AdScreenOwner>() {
+            case AD_AUDIENCE_XTICS:
+                singleCollectionType = new TypeToken<AdAudienceXtics>() {
                 }.getType();
-                entityCollectionType = new TypeToken<Set<AdScreenOwner>>() {
+                entityCollectionType = new TypeToken<Set<AdAudienceXtics>>() {
                 }.getType();
 
                 break;
 
-            case AD_AREA:
-                singleCollectionType = new TypeToken<AdArea>() {
+            case AD_BUSINESS_HOURS:
+                singleCollectionType = new TypeToken<AdBusinessHours>() {
                 }.getType();
-                entityCollectionType = new TypeToken<Set<AdArea>>() {
+                entityCollectionType = new TypeToken<Set<AdBusinessHours>>() {
+                }.getType();
+                break;
+
+            case AD_SEYEYA_WALLET:
+                singleCollectionType = new TypeToken<AdSeyeyaWallet>() {
+                }.getType();
+                entityCollectionType = new TypeToken<Set<AdSeyeyaWallet>>() {
                 }.getType();
                 break;
 
@@ -161,10 +169,10 @@ public class GeneralUtils {
                 }.getType();
                 break;
 
-            case AD_SCREENOWNER:
-                singleCollectionType = new TypeToken<AdScreenOwner>() {
+            case AD_SCREEN_SIZE:
+                singleCollectionType = new TypeToken<AdScreenSize>() {
                 }.getType();
-                entityCollectionType = new TypeToken<Set<AdScreenOwner>>() {
+                entityCollectionType = new TypeToken<Set<AdScreenSize>>() {
                 }.getType();
                 break;
 
@@ -197,9 +205,9 @@ public class GeneralUtils {
                 break;
 
             case BUSINESS_TYPE:
-                singleCollectionType = new TypeToken<AdBusinessType>() {
+                singleCollectionType = new TypeToken<AdBusinessService>() {
                 }.getType();
-                entityCollectionType = new TypeToken<Set<AdBusinessType>>() {
+                entityCollectionType = new TypeToken<Set<AdBusinessService>>() {
                 }.getType();
                 break;
 
@@ -260,13 +268,13 @@ public class GeneralUtils {
                 entityClass = AdProgram.class;
                 break;
 
-            case AD_OWNER:
+            case AD_AUDIENCE_XTICS:
 
-                entityClass = AdScreenOwner.class;
+                entityClass = AdAudienceXtics.class;
                 break;
 
-            case AD_AREA:
-                entityClass = AdArea.class;
+            case AD_BUSINESS_HOURS:
+                entityClass = AdBusinessHours.class;
                 break;
 
             case AD_RESOURCE:
@@ -285,8 +293,8 @@ public class GeneralUtils {
                 entityClass = AdScreen.class;
                 break;
 
-            case AD_SCREENOWNER:
-                entityClass = AdScreenOwner.class;
+            case AD_SEYEYA_WALLET:
+                entityClass = AdSeyeyaWallet.class;
                 break;
 
             case AD_CLIENT:
@@ -306,7 +314,7 @@ public class GeneralUtils {
                 break;
 
             case BUSINESS_TYPE:
-                entityClass = AdBusinessType.class;
+                entityClass = AdBusinessService.class;
                 break;
 
             case TIME_SLOT:
@@ -543,8 +551,8 @@ public class GeneralUtils {
             //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
             GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
             graphAdapterBuilder
-                    .addType(Author.class)
-                    .addType(AdScreenOwner.class)
+                    //.addType(Author.class)
+                    //.addType(AdScreenOwner.class)
                     //.addType(AdResource.class)
                     //.addType(AdProgram.class)
                     .registerOn(gsonBuilder);
@@ -585,8 +593,8 @@ public class GeneralUtils {
             //gsonBuilder.excludeFieldsWithoutExposeAnnotation();
             GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
             graphAdapterBuilder
-                    .addType(Author.class)
-                    .addType(AdScreenOwner.class)
+                    //.addType(Author.class)
+                    //.addType(AdScreenOwner.class)
                     //.addType(AdProgram.class)
                     .registerOn(gsonBuilder);
             gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
@@ -628,8 +636,8 @@ public class GeneralUtils {
         //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
         GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
         graphAdapterBuilder
-                .addType(Author.class)
-                .addType(AdScreenOwner.class)
+                //.addType(Author.class)
+                //.addType(AdScreenOwner.class)
                 //.addType(AdProgram.class)
                 .registerOn(gsonBuilder);
         gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
@@ -676,8 +684,8 @@ public class GeneralUtils {
         //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
         GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
         graphAdapterBuilder
-                .addType(Author.class)
-                .addType(AdScreenOwner.class)
+                //.addType(Author.class)
+                //.addType(AdScreenOwner.class)
                 //.addType(AdProgram.class)
                 .registerOn(gsonBuilder);
         gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
@@ -733,8 +741,8 @@ public class GeneralUtils {
             //gsonBuilder.registerTypeAdapter(AdScreenOwner.class, new MyGsonTypeAdapter<AdScreenOwner>());
             GraphAdapterBuilder graphAdapterBuilder = new GraphAdapterBuilder();
             graphAdapterBuilder
-                    .addType(Author.class)
-                    .addType(AdScreenOwner.class)
+                    //.addType(Author.class)
+                    //.addType(AdScreenOwner.class)
                     //.addType(AdProgram.class)
                     .registerOn(gsonBuilder);
             gsonBuilder.registerTypeAdapter(LocalDate.class, new JodaGsonLocalDateConverter());
@@ -1441,10 +1449,6 @@ public class GeneralUtils {
         return message;
     }
 
-
-    
-
-
     /**
      *
      * @param smsText
@@ -1593,4 +1597,6 @@ public class GeneralUtils {
 
         return resourceName;
     }
+    
+    
 }

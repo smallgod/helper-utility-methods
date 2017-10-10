@@ -195,8 +195,7 @@ public class DateUtils {
         return isDateInTheFuture;
 
     }
-    
-    
+
     public static boolean isDateInThePast(LocalDate dateToCheck) {
 
         LocalDate dateNow = DateUtils.getDateNow();
@@ -477,6 +476,20 @@ public class DateUtils {
     public static LocalTime convertMillisToLocalTime(long millisOfDay, DateTimeZone timeZone) {
 
         LocalTime localTime = new LocalTime(millisOfDay, timeZone);
+
+        return localTime;
+
+    }
+
+    /**
+     * Convert a string representation of the time part to localtime
+     *
+     * @param timeInstant
+     * @return
+     */
+    public static LocalTime convertStringToLocalTime(String timeInstant) {
+
+        LocalTime localTime = new LocalTime(timeInstant);
 
         return localTime;
 

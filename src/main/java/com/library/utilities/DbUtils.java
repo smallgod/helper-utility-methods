@@ -13,14 +13,14 @@ import com.library.datamodel.model.v1_0.AdProgram;
 import com.library.datamodel.model.v1_0.AdResource;
 import com.library.datamodel.model.v1_0.AdSchedule;
 import com.library.datamodel.model.v1_0.AdScreen;
-import com.library.datamodel.model.v1_0.AdArea;
-import com.library.datamodel.model.v1_0.AdScreenOwner;
 import com.library.datamodel.model.v1_0.AdTerminal;
 import com.library.datamodel.model.v1_0.AdText;
 import com.library.datamodel.model.v1_0.AdAudienceType;
+import com.library.datamodel.model.v1_0.AdBusinessHours;
 import com.library.datamodel.model.v1_0.Author;
 import com.library.datamodel.model.v1_0.Book;
-import com.library.datamodel.model.v1_0.AdBusinessType;
+import com.library.datamodel.model.v1_0.AdBusinessService;
+import com.library.datamodel.model.v1_0.AdSeyeyaWallet;
 import com.library.datamodel.model.v1_0.AdTimeSlot;
 import com.library.sglogger.util.LoggerUtil;
 import java.util.Date;
@@ -57,11 +57,11 @@ public final class DbUtils {
 
         switch (entity) {
 
-            case AD_AREA:
-                entityType = AdArea.class;
+            case AD_BUSINESS_HOURS:
+                entityType = AdBusinessHours.class;
                 break;
 
-            case AD_OWNER:
+            case AD_AUDIENCE_XTICS:
                 entityType = AdClient.class;
                 break;
 
@@ -86,8 +86,8 @@ public final class DbUtils {
                 entityType = AdScreen.class;
                 break;
 
-            case AD_SCREENOWNER:
-                entityType = AdScreenOwner.class;
+            case AD_SEYEYA_WALLET:
+                entityType = AdSeyeyaWallet.class;
                 break;
 
             case AD_CLIENT:
@@ -107,7 +107,7 @@ public final class DbUtils {
                 break;
 
             case BUSINESS_TYPE:
-                entityType = AdBusinessType.class;
+                entityType = AdBusinessService.class;
                 break;
 
             case TIME_SLOT:
