@@ -35,8 +35,10 @@ public class CampaignUtilities {
         Set<TimeSlot> timeSlots = new HashSet<>();
 
         if (null == adProgSlot || adProgSlot.isEmpty()) {
-            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, NamedConstants.GENERIC_DB_ERR_DESC, "NO AdProgramSlots found!");
-            throw error;
+//            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, NamedConstants.GENERIC_DB_ERR_DESC, "NO AdProgramSlots found!");
+//            throw error;
+            
+            return timeSlots;
         }
 
         for (AdProgramSlot slot : adProgSlot) {

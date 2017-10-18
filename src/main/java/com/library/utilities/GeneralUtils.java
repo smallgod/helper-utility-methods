@@ -1200,7 +1200,12 @@ public class GeneralUtils {
     public static long convertObjectToLong(Object value) {
 
         logger.debug("Converting Object to long");
-        return (value instanceof Number ? ((Number) value).longValue() : -1);
+
+        if (value instanceof String) {
+            return Long.parseLong((String) value);
+        } else {
+            return (value instanceof Number ? ((Number) value).longValue() : -1);
+        }
     }
 
     /**
@@ -1554,7 +1559,7 @@ public class GeneralUtils {
      * @param commaDelString
      * @return
      */
-    public static Set<String> convertCommaDelStringToSet(String commaDelString) {
+    public static Set<String> convertCommaDelStringToStringSet(String commaDelString) {
 
         Set<String> set = new HashSet<>();
 
@@ -1566,6 +1571,44 @@ public class GeneralUtils {
         //Set<String> hashSet = new HashSet<>(Arrays.asList(commaDelString.split(",")));
         return set;
 
+    }
+
+    /**
+     * Convert a comma delimited String to a Set of type Long
+     *
+     * @param commaDelString
+     * @return
+     */
+    public static Set<Long> convertCommaDelStringToLongSet(String commaDelString) {
+
+        Set<Long> set = new HashSet<>();
+
+        StringTokenizer st = new StringTokenizer(commaDelString, ",");
+        while (st.hasMoreTokens()) {
+            set.add(Long.valueOf(st.nextToken()));
+        }
+
+        //Set<String> hashSet = new HashSet<>(Arrays.asList(commaDelString.split(",")));
+        return set;
+    }
+
+    /**
+     * Convert a comma delimited String to a Set of type Long
+     *
+     * @param commaDelString
+     * @return
+     */
+    public static Set<Integer> convertCommaDelStringToIntegerSet(String commaDelString) {
+
+        Set<Integer> set = new HashSet<>();
+
+        StringTokenizer st = new StringTokenizer(commaDelString, ",");
+        while (st.hasMoreTokens()) {
+            set.add(Integer.valueOf(st.nextToken()));
+        }
+
+        //Set<String> hashSet = new HashSet<>(Arrays.asList(commaDelString.split(",")));
+        return set;
     }
 
     /**
@@ -1597,6 +1640,5 @@ public class GeneralUtils {
 
         return resourceName;
     }
-    
-    
+
 }
