@@ -1,9 +1,5 @@
 package com.library.utilities;
 
-/*import com.advertexpo.addisplay.config.v1_0.Appconfig;
-import com.advertexpo.addisplay.constants.ErrorCategory;
-import com.advertexpo.addisplay.constants.ErrorCode;
-import com.advertexpo.addisplay.exceptiontype.MyCustomExceptionOLD;*/
 import com.library.customexception.MyCustomException;
 import com.library.customexception.MyCustomExceptionOLD;
 import com.library.datamodel.Constants.ErrorCategory;

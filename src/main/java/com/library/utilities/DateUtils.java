@@ -186,7 +186,7 @@ public class DateUtils {
      * @return true if given date is in the future else false
      *
      */
-    public static boolean isDateInTheFuturew(LocalDate dateToCheck) {
+    public static boolean isDateInTheFuture(LocalDate dateToCheck) {
 
         LocalDate dateNow = DateUtils.getDateNow();
 
@@ -194,6 +194,77 @@ public class DateUtils {
 
         return isDateInTheFuture;
 
+    }
+
+    /**
+     * Check if the given time is in the future
+     *
+     * @param timeToCheck
+     * @return
+     */
+    public static boolean isTimeInTheFuture(LocalTime timeToCheck) {
+
+        LocalTime timeNow = DateUtils.getTimeNow();
+
+        boolean isTimeInFuture = timeToCheck.isAfter(timeNow);
+
+        return isTimeInFuture;
+
+    }
+
+    public static boolean isTimeEqualTo(LocalTime timeToCheck) {
+
+        LocalTime timeNow = DateUtils.getTimeNow();
+
+        boolean isTimeInFuture = timeToCheck.isAfter(timeNow);
+
+        return isTimeInFuture;
+
+    }
+
+    /**
+     * Check if the given time is in the future
+     *
+     * @param timeToCheck
+     * @return
+     */
+    public static boolean isTimeInThePast(LocalTime timeToCheck) {
+
+        LocalTime timeNow = DateUtils.getTimeNow();
+
+        boolean isTimeInFuture = timeToCheck.isBefore(timeNow);
+
+        return isTimeInFuture;
+
+    }
+
+    /**
+     * Check if timeA is equal to timeB
+     *
+     * @param timeA
+     * @param timeB
+     * @return
+     */
+    public static boolean isTimeEqualTo(LocalTime timeA, LocalTime timeB) {
+
+        if (timeA.compareTo(timeB) == 0) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
+
+    /**
+     * Check if timeA is equal to LocalTime now
+     *
+     * @param timeA
+     * @return
+     */
+    public static boolean isTimeEqualToNow(LocalTime timeA) {
+
+        if (timeA.compareTo(getTimeNow()) == 0) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     public static boolean isDateInThePast(LocalDate dateToCheck) {

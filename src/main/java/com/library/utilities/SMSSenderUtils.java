@@ -112,6 +112,33 @@ public class SMSSenderUtils {
     }
 
     /**
+     * Send a text message with the earliest time the campaign has been
+     * scheduled
+     *
+     * @param id
+     * @param time
+     * @param recipientAccount
+     * @param clientPool
+     * @return
+     * @throws MyCustomException
+     */
+    public static String generateAndSendCampaignScheduledMsg(int id, String time, String recipientAccount, final HttpClientPool clientPool) throws MyCustomException {
+
+        //Object[] params = {"nameRobert", "rhume55@gmail.com"};
+        Map<String, String> map = new HashMap<>();
+
+        map.put("id", "" + id);
+        map.put("time", time);
+
+        String message = MapFormat.format(NamedConstants.SMS_TEMPLATE_CAMPAIGN_SCHEDULE_MSG, map);
+        logger.debug("message : " + message);
+
+        sendSMS(message, recipientAccount, clientPool);
+
+        return message;
+    }
+
+    /**
      *
      * @param smsText
      * @param recipientNumber

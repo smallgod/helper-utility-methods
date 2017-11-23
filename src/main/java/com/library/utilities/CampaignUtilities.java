@@ -6,8 +6,6 @@
 package com.library.utilities;
 
 import com.library.customexception.MyCustomException;
-import com.library.datamodel.Constants.ErrorCode;
-import com.library.datamodel.Constants.NamedConstants;
 import com.library.datamodel.Json.TimeSlot;
 import com.library.datamodel.model.v1_0.AdProgramSlot;
 import com.library.sglogger.util.LoggerUtil;
@@ -37,7 +35,7 @@ public class CampaignUtilities {
         if (null == adProgSlot || adProgSlot.isEmpty()) {
 //            MyCustomException error = GeneralUtils.getSingleError(ErrorCode.PROCESSING_ERR, NamedConstants.GENERIC_DB_ERR_DESC, "NO AdProgramSlots found!");
 //            throw error;
-            
+
             return timeSlots;
         }
 
@@ -161,7 +159,5 @@ public class CampaignUtilities {
         }
         logger.warn("Can't schedule this slot, slot time for the day has ended");
         return Boolean.TRUE;
-
     }
-
 }

@@ -1567,10 +1567,8 @@ public class GeneralUtils {
         while (st.hasMoreTokens()) {
             set.add(st.nextToken());
         }
-
         //Set<String> hashSet = new HashSet<>(Arrays.asList(commaDelString.split(",")));
         return set;
-
     }
 
     /**
